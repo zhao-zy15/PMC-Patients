@@ -130,3 +130,9 @@ dmypy.json
 
 # Pytorch Models
 .pth
+
+# vscode
+*.vscode/
+
+# Data
+*.json
