@@ -129,7 +129,7 @@ dmypy.json
 .pyre/
 
 # Pytorch Models
-.pth
+*.pth
 
 # vscode
 *.vscode/
