@@ -1,8 +1,8 @@
 import argparse
 import torch
 from torch import nn
-from dataloader import PatientSimilarityDataset, MyCollateFn
-from model import monoBERT
+from dataloader import PatientFindingDataset, MyCollateFn
+from model import BERT_classify
 import numpy as np
 from tqdm import trange, tqdm
 from transformers import AutoTokenizer, AdamW, get_linear_schedule_with_warmup, get_cosine_schedule_with_warmup, get_constant_schedule_with_warmup
@@ -10,14 +10,12 @@ from torch.utils.data import DataLoader
 import os
 from tensorboardX import SummaryWriter
 from torch.optim.lr_scheduler import CosineAnnealingLR
+from utils import metric
 
 
 def train(args, model, dataloader, dev_dataloader, test_dataloader):
     writer = SummaryWriter(log_dir = args.output_dir)
-    if args.mse:
-        lossFn = nn.MSELoss()
-    else:
-        lossFn = nn.CrossEntropyLoss()
+    lossFn = nn.CrossEntropyLoss()
     
     no_decay = ["bias", "LayerNorm.weight"]
     optimizer_grouped_parameters = [
@@ -55,24 +53,11 @@ def train(args, model, dataloader, dev_dataloader, test_dataloader):
             input_ids = batch[0].to(args.device)
             attention_mask = batch[1].to(args.device)
             token_type_ids = batch[2].to(args.device)
-            label = batch[3].to(args.device)
+            tags = batch[3].to(args.device)
             _, prob = model(input_ids, attention_mask, token_type_ids)
-            if args.mse:
-                label = label - 1
-                pred = []
-                for score in prob:
-                    if score.item() < -0.5:
-                        pred.append(-1)
-                    elif score.item() < 0.5:
-                        pred.append(0)
-                    else:
-                        pred.append(1)
-                pred = torch.tensor(pred).to(args.device)
-                loss = lossFn(prob, label.float())
-            else:
-                loss = lossFn(prob, label)
-                pred = torch.argmax(prob, axis = 1)
-            acc = sum(pred == label).item() / label.shape[0]
+            loss = lossFn(prob, tags)
+            pred = torch.argmax(prob, axis = 1)
+            acc = sum(pred == tags).item() / tags.shape[0]
 
             writer.add_scalar('loss', loss.item(), global_step = global_step)
             writer.add_scalar("acc", acc, global_step = global_step)
@@ -89,60 +74,61 @@ def train(args, model, dataloader, dev_dataloader, test_dataloader):
                 lr_scheduler.step()
             
             if global_step % args.test_steps == 0:
-                total, acc, test_acc, ocnfusion = test(args, model, dev_dataloader)
+                token_acc, confusion, precision, recall, f1 = test(args, model, dev_dataloader)
                 print("======Dev at step {}======".format(global_step))
-                print(total, acc, test_acc)
+                print(token_acc, precision, recall, f1)
                 print(confusion)
-                writer.add_scalar("dev_acc", test_acc, global_step = global_step)
+                writer.add_scalar("dev_acc", token_acc, global_step = global_step)
 
             if global_step % args.save_steps == 0:
                 save_path = os.path.join(args.output_dir, f'model_{global_step}.pth')
                 torch.save(model, save_path)
 
     
-    total, acc, test_acc, confusion = test(args, model, test_dataloader)
+    token_acc, confusion, precision, recall, f1 = test(args, model, test_dataloader)
     print("======Test======")
-    print(total, acc, test_acc)
+    print(token_acc, precision, recall, f1)
     print(confusion)
-    writer.add_scalar("test_acc", test_acc, global_step = global_step)
+    writer.add_scalar("test_acc", token_acc, global_step = global_step)
 
 
 def test(args, model, dataloader):
     model.eval()
     steps = 0
     confusion = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    total = np.array([0, 0, 0, 0, 0])
     with torch.no_grad():
         bar = tqdm(dataloader)
-        total = [0, 0, 0]
-        acc = [0, 0, 0]
+        article_tag = []
+        article_pred = []
         for _, batch in enumerate(bar):
+            steps += 1
             input_ids = batch[0].to(args.device)
             attention_mask = batch[1].to(args.device)
             token_type_ids = batch[2].to(args.device)
-            label = batch[3].to(args.device)
+            tags = batch[3].to(args.device)
+            index = batch[4]
             _, prob = model(input_ids, attention_mask, token_type_ids)
-            if args.mse:
-                label = label - 1
-                pred = []
-                for score in prob:
-                    if score.item() < -0.5:
-                        pred.append(-1)
-                    elif score.item() < 0.5:
-                        pred.append(0)
-                    else:
-                        pred.append(1)
-                pred = torch.tensor(pred).to(args.device)
-            else:
-                pred = torch.argmax(prob, axis = 1)
+            pred = torch.argmax(prob, axis = 1)
             for i in range(pred.shape[0]):
-                confusion[label[i].item()][pred[i].item()] += 1
-                total[pred[i].item()] += 1
-                if label[i].item() == pred[i].item():
-                    acc[label[i].item()] += 1
-            bar.set_description("Step: {}, Acc: {:.4f}".format(steps, sum(acc) / sum(total)))
+                confusion[tags[i].item() - 1][pred[i].item() - 1] += 1
+                if index[i] != 0 or len(article_pred) == 0:
+                    article_tag.append(tags[i].item())
+                    article_pred.append(pred[i].item())
+                else:
+                    total_token, right_token, total_ent, pred_ent, right_ent = metric(article_tag, article_pred)
+                    total += np.array([total_token, right_token, total_ent, pred_ent, right_ent])
+                    token_acc = total[1] / total[0]
+                    precision = total[4] / total[3] if total[3] != 0 else 0
+                    recall = total[4] / total[2]
+                    f1 = (2 * precision * recall) / (precision + recall) if precision + recall != 0 else 0
+                    article_pred = [pred[i].item()]
+                    article_tag = [tags[i].item()]
+                        
+            bar.set_description("Step: {}, Acc: {:.4f}, F1: {:.4f}".format(steps, token_acc, f1))
 
     model.train()
-    return total, acc, sum(acc) / sum(total), confusion
+    return token_acc, confusion, precision, recall, f1
 
 
 def run(args):
@@ -151,18 +137,18 @@ def run(args):
     np.random.seed(args.seed)  # numpy
     torch.backends.cudnn.deterministic = True  # cudnn
 
-    data_dir = "../../../datasets/task_2_patient_similarity"
+    data_dir = "../../../../datasets/task_1_patient_note_recognition"
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
-    model = monoBERT(args.model_name_or_path, args.mse)
+    model = BERT_classify(args.model_name_or_path)
     model.to(args.device)
     
-    train_dataset = PatientSimilarityDataset(data_dir, "train", tokenizer)
+    train_dataset = PatientFindingDataset(data_dir, tokenizer, "train", 512)
     train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle = True, collate_fn = MyCollateFn)
-    dev_dataset = PatientSimilarityDataset(data_dir, "dev", tokenizer)
-    dev_dataloader = DataLoader(dev_dataset, args.batch_size, shuffle = True, collate_fn = MyCollateFn)
-    test_dataset = PatientSimilarityDataset(data_dir, "test", tokenizer)
+    dev_dataset = PatientFindingDataset(data_dir, tokenizer, "dev", 512)
+    dev_dataloader = DataLoader(dev_dataset, args.batch_size, shuffle = False, collate_fn = MyCollateFn)
+    test_dataset = PatientFindingDataset(data_dir, tokenizer, "test", 512)
     test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle = False, collate_fn = MyCollateFn)
-    
+
     if not os.path.exists(args.output_dir):
         os.mkdir(args.output_dir)
     if args.train:
@@ -174,16 +160,12 @@ def run(args):
         checkpoint = os.path.join(args.output_dir, 'last_model.pth')
         model = torch.load(checkpoint)
         model.to(args.device)
-        test_dataset = PatientSimilarityDataset(data_dir, "test", tokenizer)
+        test_dataset = PatientFindingDataset(data_dir, tokenizer, "test", 512)
         test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle = False, collate_fn = MyCollateFn)
-        total, acc, test_acc, confusion = test(args, model, test_dataloader)
+        token_acc, confusion, precision, recall, f1 = test(args, model, test_dataloader)
         print("======Test======")
-        print(total, acc, test_acc, confusion)
-        test_dataset = PatientSimilarityDataset(data_dir, "test", tokenizer, True)
-        test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle = False, collate_fn = MyCollateFn)
-        total, acc, test_acc, confusion = test(args, model, test_dataloader)
-        print("======Test======")
-        print(total, acc, test_acc, confusion)
+        print(token_acc, precision, recall, f1)
+        print(confusion)
 
 
 parser = argparse.ArgumentParser()
@@ -271,11 +253,6 @@ parser.add_argument(
     default = "output",
     type = str,
     help = "Output directory."
-)
-parser.add_argument(
-    "--mse",
-    action = "store_true",
-    help = "If use MSE loss."
 )
 parser.add_argument(
     "--train",

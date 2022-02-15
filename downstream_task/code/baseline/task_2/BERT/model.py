@@ -28,7 +28,7 @@ class monoBERT(nn.Module):
 
 
 if __name__ == "__main__":
-    data_dir = "../../../datasets/task_2_patient_similarity"
+    data_dir = "../../../../datasets/task_2_patient2patient_similarity"
     model_name_or_path = "dmis-lab/biobert-v1.1"
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, max_length = 512)
     dataset = PatientSimilarityDataset(data_dir, "train", tokenizer)

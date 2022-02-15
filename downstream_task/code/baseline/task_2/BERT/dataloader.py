@@ -11,7 +11,7 @@ class PatientSimilarityDataset(Dataset):
         self.tokenizer = tokenizer
         self.max_length = 512
         assert mode in ["train", "dev", "test"], "mode argument be one of \'train\', \'dev\' or \'test\'."
-        file_name = "patient_similarity_" + mode + ".json"
+        file_name = "PPS_" + mode + ".json"
         self.instances = json.load(open(os.path.join(data_dir, file_name), "r"))
         if no_train:
             case_ids = [ins[0] for ins in self.instances]
@@ -53,9 +53,9 @@ def MyCollateFn(batch):
 
 
 if __name__ == "__main__":
-    data_dir = "../../../datasets/task_2_patient_similarity"
+    data_dir = "../../../../datasets/task_2_patient2patient_similarity"
     model_name_or_path = "dmis-lab/biobert-v1.1"
-    tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, max_length = 512)
+    tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
     dataset = PatientSimilarityDataset(data_dir, "dev", tokenizer, True)
     dataloader = DataLoader(dataset, batch_size = 8, shuffle = True, collate_fn = MyCollateFn)
     import ipdb; ipdb.set_trace()

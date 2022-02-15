@@ -139,3 +139,6 @@ dmypy.json
 
 # figures
 figures/
+
+# output
+output/

@@ -4,9 +4,9 @@ import os
 from tqdm import tqdm
 
 
-es = ES(http_auth = "elastic:UpMvQdoGeuoHDfrv00qF")
+es = ES()
 
-data_dir = "../../../../pubmed_abstract/"
+data_dir = "../../../../../../pubmed/pubmed_title_abstract/"
 PMIDs = set()
 for file_name in tqdm(os.listdir(data_dir)):
     body = []

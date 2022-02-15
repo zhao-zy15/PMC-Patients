@@ -2,7 +2,8 @@
 This repository contains PMC-Patients dataset (including patient notes, patient-patient similarity annotations, patient-article relevance annotations and four downstream task datasets: patient note recognition PNR, patient-patient similarity PPS, patient-patient retrieval PPR, patient-article retrieval PAR), codes for collection datasets and several baseline models.
 
 ## PMC OA and PubMed Downloads
-If you have already downloaded PMC OA and PubMed abstracts on your device, skip this step and change relative directory in later steps.
+For those who only wish to reproduce baseline models, only PubMed abstracts are required for PAR task.
+If you have already downloaded PMC OA and PubMed abstracts on your device, skip this step and change relative directory in later steps. Otherwise, download PMC OA and PubMed via https://ftp.ncbi.nlm.nih.gov/pub/pmc/oa_bulk/ and https://ftp.ncbi.nlm.nih.gov/pubmed/, respectively. Note that file `PMC-ids.csv` under directory https://ftp.ncbi.nlm.nih.gov/pub/pmc/ is also required.
 
 
 ## PMC-Patients Collection
@@ -20,7 +21,7 @@ Extract citations in PubMed.
 ```
 python PMC-Patients_collection/pubmed_extractors/extract_cites.py
 ```
-Extract titles and abstracts in PubMed for PAR.
+Extract titles and abstracts in PubMed for PAR. (If you only wish to reproduce baseline models, run this command is enough.)
 ```
 python PMC-Patients_collection/pubmed_extractors/extract_title_abstract.py
 ```
@@ -80,7 +81,86 @@ python downstream_task/code/dataset_construction/PPS_sample.py
 PPS dataset is a list of triplets. Each entry is in format (patient_uid_1, patient_uid_2, similarity) where similarity has three values:0, 1, 2, indicating corresponding similarity.
 
 ### Patient-Patient Retrieval (PPR)
-Split by `dataset_split.py`.
+Split by `dataset_split.py`. PPR dataset is a dict where the keys are `patient_uid` of queries and each entry is two lists of `patient_uid`, representing notes of similarity 1 and 2, respectively.
 
 ### Patient-Article Retrieval (PAR)
+Split by `dataset_split.py`. PPR dataset is a dict where the keys are `patient_uid` of queries and each entry is a list of `PMID`, representing articles relevant to the query.
+
+
+## Baseline Models
+Codes for build and evaluate baseline models for downstream tasks are in directory `downstream_task/code/baseline`. Evaluation codes are reusable.
+To simply reproduce baselines, download xxxxx and unzip it to directory `downstrea_task/datasets`.
+### PNR
+**Demo_based:**
+```
+python downstream_task/code/baseline/task_1/demo_filter/demo_baseline.py
+```
+**BERT:**
+`train` argument controls whether to train the model. For other parameters, see code.
+```
+python downstream_task/code/baseline/task_1/BERT/main.py --train
+```
+**CNN+LSTM+CRF:**
+`train` argument controls whether to train the model. For other parameters, see code.
+```
+python downstream_task/code/baseline/task_1/CNN_LSTM_CRF/main.py --train
+```
+
+### PPS
+**Feature_based:**
+First use Scispacy (https://github.com/allenai/scispacy) to detect named entities in patient notes and link each entity to UMLS.
+```
+python downstream_task/code/baseline/task_2/feature_based/NER.py
+```
+Then train a model with grid search for best hyperparameters.
+`model` argument controls whether to use logistic regression or SVM (`LR` or `SVM`).
+```
+python downstream_task/code/baseline/task_2/feature_based/model.py --model LR
+```
+**BERT**
+`train` argument controls whether to train the model. For other parameters, see code.
+```
+python downstream_task/code/baseline/task_2/BERT/main.py --train
+```
+
+### PPR
+**ES**
+Elasticsearch and the python package Elasticsearch is required.
+Add index.
+```
+python downstream_task/code/baseline/task_3/ES/add_index.py
+```
+Query with multithreads.
+```
+python downstream_task/code/baseline/task_3/ES/query.py
+```
+**EBR**
+First generate embeddings for each query and document.
+```
+python downstream_task/code/baseline/task_3/EBR/embedding.py
+```
+Then perform embedding based retrieval.
+```
+python downstream_task/code/baseline/task_3/EBR/EBR.py
+```
+**ES+Rerank**
+To run rerank, you need first train a BERT model in task 2.
+```
+python downstream_task/code/baseline/task_3/rerank/rerank.py
+
+```
+
+### PAR
+Note that to run baseline models for PAR, you have to download PubMed and extract titles and abstracts (see commands above).
+**ES**
+Elasticsearch and the python package Elasticsearch is required.
+Add index.
+```
+python downstream_task/code/baseline/task_4/ES/add_index.py
+```
+Query with multithreads.
+```
+python downstream_task/code/baseline/task_4/ES/query.py
+```
+
 

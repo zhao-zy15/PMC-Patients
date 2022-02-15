@@ -9,7 +9,7 @@ from transformers import AutoTokenizer
 class PatientFindingDataset(Dataset):
     def __init__(self, data_dir, tokenizer, mode, max_length):
         assert mode in ["train", "dev", "test", "human"], "mode argument be one of \'train\', \'dev\', \'test\' or \'human\'."
-        file_name = "patient_note_recognition_" + mode + ".json"
+        file_name = "PNR_" + mode + ".json"
         articles = json.load(open(os.path.join(data_dir, file_name), "r"))
         self.tokenizer = tokenizer
         self.max_length = max_length
@@ -20,7 +20,7 @@ class PatientFindingDataset(Dataset):
             self.texts += art['texts']
             self.tags += art['tags']
             self.index += [i for i in range(len(art['texts']))]
-        self.tag2id = {"B": 1, "I": 2, "O": 0, "E": 2, "S": 1}
+        self.tag2id = {"B": 1, "I": 2, "O": 0}
 
 
     def __getitem__(self, index):
@@ -33,20 +33,6 @@ class PatientFindingDataset(Dataset):
     def __len__(self):
         return len(self.texts)
 
-    '''
-    def summary(self):
-        senLen1 = []
-        senLen2 = []
-        labelCount = [0, 0, 0]
-
-        for sen1, sen2, label in self.data:
-            senLen1.append(len(sen1.strip().split()))
-            senLen2.append(len(sen2.strip().split()))
-            labelCount[label] += 1
-        
-        import ipdb;ipdb.set_trace()
-        return np.mean(senLen1), np.mean(senLen2), labelCount
-    '''
 
 
 def MyCollateFn(batch):

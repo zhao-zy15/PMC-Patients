@@ -2,7 +2,7 @@ import torch
 import numpy as np
 
 
-tag2id = {"B": 1, "I": 2, "O": 3}
+tag2id = {"B": 1, "I": 2, "O": 0}
 
 def find_all_ent(tags):
     ents = []
@@ -13,7 +13,7 @@ def find_all_ent(tags):
                 ents.append((start, i - 1))
                 start = -1
             start = i
-        if tags[i] == 3:
+        if tags[i] == 0:
             if start >= 0:
                 ents.append((start, i - 1))
                 start = -1

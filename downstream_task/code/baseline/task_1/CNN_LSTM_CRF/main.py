@@ -2,14 +2,17 @@ import argparse
 import torch
 from torch import nn
 from dataloader import PatientFindingDataset, MyCollateFn
-from model import LSTM_CRF, get_mask
+from model import CNN_LSTM_CRF, get_mask
+from transformers import AutoTokenizer, AutoModel
 from torch.optim import Adam
 import numpy as np
 from tqdm import trange, tqdm
 from torch.utils.data import DataLoader
 import os
 from tensorboardX import SummaryWriter
-from utils import metric
+import sys
+sys.path.append("..")
+from utils import batch_metric
 
 
 def train(args, model, dataloader, dev_dataloader, test_dataloader):
@@ -21,38 +24,41 @@ def train(args, model, dataloader, dev_dataloader, test_dataloader):
         model.train()
         bar = tqdm(dataloader)
         for global_step, batch in enumerate(bar):
-            para_ids = batch[0].to(args.device)
-            tags = batch[1].to(args.device)
+            input_ids = batch[0].to(args.device)
+            tags = batch[1].to(args.device).transpose(0, 1)
             length = batch[2]
 
             mask = get_mask(length).to(args.device)
-            emission = model.forward(input_data = para_ids, input_len = length)
-            loss = model.get_loss(emission = emission, labels = tags, mask = mask, device = args.device)
-            pred = model.get_best_path(emission = emission, mask = mask, device = args.device)
-            total_token, right_token, total_ent, pred_ent, right_ent = metric(tags, pred, length)
+            loss = model.neg_log_likelihood(input_ids, tags, mask, length)
+            pred = model.predict(input_ids, mask, length)
+
+            total_token, right_token, total_ent, pred_ent, right_ent = batch_metric(tags.transpose(0, 1), pred, length)
             acc = right_token / total_token
             precision = right_ent / pred_ent if pred_ent != 0 else 0
             recall = right_ent / total_ent
             f1 = (2 * precision * recall) / (precision + recall) if precision + recall != 0 else 0
+
             writer.add_scalar('loss', loss.item(), global_step = global_step + len(bar) * epoch)
             writer.add_scalar("acc", acc, global_step = global_step + len(bar) * epoch)
             writer.add_scalar("f1", f1, global_step = global_step + len(bar) * epoch)
 
+            loss /= len(length)
             loss.backward()
             bar.set_description("Step: {}, Loss: {:.4f}, Acc: {:.4f}, F1: {:.4f}".format(global_step + len(bar) * epoch, loss.item(), acc, f1))
 
             #nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
             optimizer.step()
             model.zero_grad()
+
             
-            if (epoch + 1) % args.test_steps == 0:
-                test_acc, precision, recall, f1 = test(args, model, dev_dataloader)
-                print("======Dev at epoch {}======".format(epoch))
-                print(test_acc, precision, recall, f1)
-                writer.add_scalar("dev_acc", test_acc, global_step = epoch)
-                writer.add_scalar("dev_precision", precision, global_step = epoch)
-                writer.add_scalar("dev_recall", recall, global_step = epoch)
-                writer.add_scalar("dev_f1", f1, global_step = epoch)
+        if (epoch + 1) % args.test_steps == 0:
+            test_acc, precision, recall, f1 = test(args, model, dev_dataloader)
+            print("======Dev at epoch {}======".format(epoch))
+            print(test_acc, precision, recall, f1)
+            writer.add_scalar("dev_acc", test_acc, global_step = epoch)
+            writer.add_scalar("dev_precision", precision, global_step = epoch)
+            writer.add_scalar("dev_recall", recall, global_step = epoch)
+            writer.add_scalar("dev_f1", f1, global_step = epoch)
 
     
     test_acc, precision, recall, f1 = test(args, model, test_dataloader)
@@ -70,17 +76,15 @@ def test(args, model, dataloader):
     with torch.no_grad():
         bar = tqdm(dataloader)
         for steps, batch in enumerate(bar):
-            para_ids = batch[0].to(args.device)
-            tags = batch[1].to(args.device)
+            input_ids = batch[0].to(args.device)
+            tags = batch[1].to(args.device).transpose(0, 1)
             length = batch[2]
 
             mask = get_mask(length).to(args.device)
-            emission = model.forward(input_data = para_ids, input_len = length)
-            loss = model.get_loss(emission = emission, labels = tags, mask = mask, device = args.device)
-            pred = model.get_best_path(emission = emission, mask = mask, device = args.device)
-
-            total_token, right_token, total_ent, pred_ent, right_ent = metric(tags, pred, length)
-            total += np.array([total_token, right_token, total_ent, pred_ent, right_ent])
+            loss = model.neg_log_likelihood(input_ids, tags, mask, length)
+            pred = model.predict(input_ids, mask, length)
+            loss /= len(length)
+            total += batch_metric(tags.transpose(0, 1), pred, length)
             acc = total[1] / total[0]
             precision = total[4] / total[3] if total[3] != 0 else 0
             recall = total[4] / total[2]
@@ -97,15 +101,19 @@ def run(args):
     np.random.seed(args.seed)  # numpy
     torch.backends.cudnn.deterministic = True  # cudnn
 
-    data_dir = "../../../datasets/task_1_patient_finding"
-    model = LSTM_CRF()
+    data_dir = "../../../../datasets/task_1_patient_note_recognition"
+    model_name_or_path = "dmis-lab/biobert-v1.1"
+    tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, max_length = 256)
+    biobert = AutoModel.from_pretrained(model_name_or_path)
+    args.vocab_size = tokenizer.vocab_size
+    model = CNN_LSTM_CRF(args, biobert.embeddings.word_embeddings.weight)
     model.to(args.device)
     
-    train_dataset = PatientFindingDataset(data_dir, "train")
+    train_dataset = PatientFindingDataset(tokenizer, args.max_length, data_dir, "train")
     train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle = True, collate_fn = MyCollateFn)
-    dev_dataset = PatientFindingDataset(data_dir, "dev")
-    dev_dataloader = DataLoader(dev_dataset, args.batch_size, shuffle = True, collate_fn = MyCollateFn)
-    test_dataset = PatientFindingDataset(data_dir, "test")
+    dev_dataset = PatientFindingDataset(tokenizer, args.max_length, data_dir, "dev")
+    dev_dataloader = DataLoader(dev_dataset, args.batch_size, shuffle = False, collate_fn = MyCollateFn)
+    test_dataset = PatientFindingDataset(tokenizer, args.max_length, data_dir, "test")
     test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle = False, collate_fn = MyCollateFn)
     
     if not os.path.exists(args.output_dir):
@@ -125,6 +133,36 @@ def run(args):
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
+    "--vocab_size",
+    default = 28996,
+    type = int,
+    help = "Vocab size."
+)
+parser.add_argument(
+    "--max_length",
+    default = 256,
+    type = int,
+    help = "Max length of a paragraph."
+)
+parser.add_argument(
+    "--kernel_num",
+    default = 128,
+    type = int,
+    help = "Number of kernels."
+)
+parser.add_argument(
+    "--kernel_size",
+    default = [7,8,9],
+    type = list,
+    help = "Sizes of kernels."
+)
+parser.add_argument(
+    "--dropout",
+    default = 0.1,
+    type = float,
+    help = "Dropout."
+)
+parser.add_argument(
     "--batch_size",
     default = 128,
     type = int,
@@ -132,7 +170,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--learning_rate",
-    default = 0.1,
+    default = 0.01,
     type = float,
     help = "Learning rate."
 )

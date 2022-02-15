@@ -3,18 +3,19 @@ import json
 import os
 from tqdm import tqdm
 import numpy as np
+import sys
+sys.path.append("..")
 from utils import getNDCG, getPrecision, getRR, getRecall
 from threading import Thread, BoundedSemaphore
 from queue import Queue
 
 
-data_dir = "../../../datasets/task_4_patient2article_retrieval"
-train_data = json.load(open(os.path.join(data_dir, "patient2article_train.json"), "r"))
-dev_data = json.load(open(os.path.join(data_dir, "patient2article_dev.json"), "r"))
-test_data = json.load(open(os.path.join(data_dir, "patient2article_test.json"), "r"))
+data_dir = "../../../../datasets/task_3_patient2patient_retrieval"
+train_data = json.load(open(os.path.join(data_dir, "PPR_train.json"), "r"))
+dev_data = json.load(open(os.path.join(data_dir, "PPR_dev.json"), "r"))
+test_data = json.load(open(os.path.join(data_dir, "PPR_test.json"), "r"))
 
-es = ES(http_auth = "elastic:UpMvQdoGeuoHDfrv00qF", timeout = 1000)
-
+es = ES()
 
 class search_thread(Thread):
     def __init__(self, patient_id, rels, mode):
@@ -26,28 +27,28 @@ class search_thread(Thread):
 
     def run(self):
         query_text = es.get(index = "patient_" + self.mode, id = self.patient_id)['_source']['patient']
-        query = {"query": {"multi_match": {"query": query_text, "type": "cross_fields", "fields": ["title^3", "abstract"]}}}
-        results = es.search(body = query, index = "pubmed_title_abstract", size = 11, _source = False)
+        query = {"query": {"match": {"patient": {"query": query_text}}}}
+        results = es.search(body = query, index = "patient_" + self.mode, size = 11, _source = False)
         result_ids = [x['_id'] for x in results['hits']['hits'][1:]]
-        golden_list = self.rels
+        golden_list = self.rels[0] + self.rels[1]
         precision = getPrecision(golden_list, result_ids)
         #NDCG = getNDCG(self.rels[0], self.rels[1], result_ids)
 
-        results = es.search(body = query, index = "pubmed_title_abstract", size = 1001, _source = False)
+        results = es.search(body = query, index = "patient_" + self.mode, size = 1001, _source = False)
         result_ids = [x['_id'] for x in results['hits']['hits'][1:]]
         recall_1k = getRecall(golden_list, result_ids)
 
-        results = es.search(body = query, index = "pubmed_title_abstract", size = 10001, _source = False)
+        results = es.search(body = query, index = "patient_" + self.mode, size = 10001, _source = False)
         result_ids = [x['_id'] for x in results['hits']['hits'][1:]]
         RR = getRR(golden_list, result_ids)
         recall_10k = getRecall(golden_list, result_ids)
-        
+
         q.put((RR, precision, recall_1k, recall_10k))
         thread_max.release()
 
 
 thread_max = BoundedSemaphore(40)
-
+'''
 q = Queue()
 precisions = []
 recalls_1k = []
@@ -55,7 +56,7 @@ recalls_10k = []
 #NDCGs = []
 RRs = []
 threads = []
-for patient_id in dev_data:
+for patient_id in tqdm(dev_data):
     thread_max.acquire()
     t = search_thread(patient_id, dev_data[patient_id], "dev")
     t.start()
@@ -74,7 +75,7 @@ while not q.empty():
 print("=========Dev=========")
 print(np.mean(RRs), np.mean(precisions), np.mean(recalls_1k), np.mean(recalls_10k))
 print(len(RRs))
-
+'''
 
 q = Queue()
 precisions = []
@@ -83,7 +84,7 @@ recalls_10k = []
 #NDCGs = []
 RRs = []
 threads = []
-for patient_id in test_data:
+for patient_id in tqdm(test_data):
     thread_max.acquire()
     t = search_thread(patient_id, test_data[patient_id], "test")
     t.start()

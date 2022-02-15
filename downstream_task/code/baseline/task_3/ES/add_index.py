@@ -4,12 +4,12 @@ import os
 from tqdm import tqdm
 
 
-data_dir = "../../../datasets/"
+data_dir = "../../../../datasets/"
 train = json.load(open(os.path.join(data_dir, "PMC-Patients_train.json"), "r"))
 dev = json.load(open(os.path.join(data_dir, "PMC-Patients_dev.json"), "r"))
 test = json.load(open(os.path.join(data_dir, "PMC-Patients_test.json"), "r"))
 
-es = ES(http_auth = "elastic:UpMvQdoGeuoHDfrv00qF")
+es = ES()
 import ipdb; ipdb.set_trace()
 train_body = []
 dev_body = []

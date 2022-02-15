@@ -8,14 +8,14 @@ test = json.load(open("../../datasets/task_1_patient_note_recognition/PNR_test.j
 
 article_count = 0
 patient_count = 0
-tag_count = {"B": 0, "I": 0, "O": 0, "E": 0, "S": 0}
-total_tag_count = {"B": 0, "I": 0, "O": 0, "E": 0, "S": 0}
+tag_count = {"B": 0, "I": 0, "O": 0}
+total_tag_count = {"B": 0, "I": 0, "O": 0}
 for patient in tqdm(train):
     article_count += 1
     for tag in patient['tags']:
         tag_count[tag] += 1
         total_tag_count[tag] += 1
-        if tag == "B" or tag == "S":
+        if tag == "B":
             patient_count += 1
         
 print("Article count: ", article_count)
@@ -25,13 +25,13 @@ print("Tags distribution: ", ["{} {:.2f}".format(k, v*100/total_tags) for k, v i
 
 article_count = 0
 patient_count = 0
-tag_count = {"B": 0, "I": 0, "O": 0, "E": 0, "S": 0}
+tag_count = {"B": 0, "I": 0, "O": 0}
 for patient in tqdm(dev):
     article_count += 1
     for tag in patient['tags']:
         tag_count[tag] += 1
         total_tag_count[tag] += 1
-        if tag == "B" or tag == "S":
+        if tag == "B":
             patient_count += 1
         
 print("Article count: ", article_count)
@@ -41,7 +41,7 @@ print("Tags distribution: ", ["{} {:.2f}".format(k, v*100/total_tags) for k, v i
 
 article_count = 0
 patient_count = 0
-tag_count = {"B": 0, "I": 0, "O": 0, "E": 0, "S": 0}
+tag_count = {"B": 0, "I": 0, "O": 0}
 
 for i in trange(len(test)):
     patient = test[i]
@@ -49,7 +49,7 @@ for i in trange(len(test)):
     for tag in patient['tags']:
         tag_count[tag] += 1
         total_tag_count[tag] += 1
-        if tag == "B" or tag == "S":
+        if tag == "B":
             patient_count += 1
 
 print("Article count: ", article_count)
@@ -60,12 +60,12 @@ print("Tags distribution: ", ["{} {:.2f}".format(k, v*100/total_tags) for k, v i
 human_set = json.load(open("../../datasets/task_1_patient_note_recognition/PNR_human.json", "r"))
 article_count = 0
 patient_count = 0
-tag_count = {"B": 0, "I": 0, "O": 0, "E": 0, "S": 0}
+tag_count = {"B": 0, "I": 0, "O": 0}
 for patient in human_set:
     article_count += 1
     for tag in patient['tags']:
         tag_count[tag] += 1
-        if tag == "B" or tag == "S":
+        if tag == "B":
             patient_count += 1
 
 print("Article count: ", article_count)

@@ -1,7 +1,8 @@
 import torch
+import numpy as np
 
 
-tag2id = {"B": 1, "I": 2, "O": 0, "E": 2, "S": 1}
+tag2id = {"B": 1, "I": 2, "O": 3}
 
 def find_all_ent(tags):
     ents = []
@@ -12,10 +13,12 @@ def find_all_ent(tags):
                 ents.append((start, i - 1))
                 start = -1
             start = i
-        if tags[i] == 0:
+        if tags[i] == 3:
             if start >= 0:
                 ents.append((start, i - 1))
                 start = -1
+    if start >= 0:
+        ents.append((start, len(tags)))
     return ents
 
 
@@ -31,9 +34,18 @@ def metric(golden_label, pred_label):
     return total_token, right_token, total_ent, pred_ent, right_ent
 
 
+def batch_metric(golden_label, pred_label, length):
+    total = np.array([0, 0, 0, 0, 0])
+    for i in range(len(length)):
+        pred_i = pred_label[i]
+        golden_i = golden_label[i][:length[i]].detach().cpu().tolist()
+        total += np.array(metric(golden_i, pred_i))
+    return total
+
+
 if __name__ == '__main__':
-    golden_list = ["O", "O", "B", "I", "E", "S", "O", "O", "O", "O", "O", "O"]
-    label_list =  ["I", "O", "B", "E", "B", "S", "O", "E", "I", "E", "B", "I"]
+    golden_list = ["O", "O", "B", "I", "I", "B", "O", "O", "O", "O", "B", "I"]
+    label_list =  ["I", "O", "B", "I", "B", "B", "O", "I", "I", "I", "B", "I"]
     
     print(find_all_ent([tag2id[x] for x in golden_list]))
     print(find_all_ent([tag2id[x] for x in label_list]))

@@ -61,15 +61,12 @@ def ins_generate(patient):
     f = False
     for i in range(len(paras)):
         instance["texts"].append(paras[i][1])
-    # Annotate BIOES tags
-    if end - start == 1:
-        tags = 'O' * start + 'S' + 'O' * (len(paras) - end)
-    else:
-        tags = 'O' * start + 'B' + 'I' * (end - start - 2) + 'E' + 'O' * (len(paras) - end)
+    # Annotate BIO tags
+    tags = 'O' * start + 'B' + 'I' * (end - start - 1) + 'O' * (len(paras) - end)
 
     instance['tags'] = [char for char in tags]
     # Check for validity of generated tags sequence.
-    BIOES = r"O*((S)|(BI*E))O*"
+    BIOES = r"O*BI*O*"
     assert re.fullmatch(BIOES, tags), "Invalid tags of article " + PMID
     
     return instance
