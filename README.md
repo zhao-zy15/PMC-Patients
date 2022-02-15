@@ -92,15 +92,18 @@ Codes for build and evaluate baseline models for downstream tasks are in directo
 To simply reproduce baselines, download xxxxx and unzip it to directory `downstrea_task/datasets`.
 ### PNR
 **Demo_based:**
+
 ```
 python downstream_task/code/baseline/task_1/demo_filter/demo_baseline.py
 ```
 **BERT:**
+
 `train` argument controls whether to train the model. For other parameters, see code.
 ```
 python downstream_task/code/baseline/task_1/BERT/main.py --train
 ```
 **CNN+LSTM+CRF:**
+
 `train` argument controls whether to train the model. For other parameters, see code.
 ```
 python downstream_task/code/baseline/task_1/CNN_LSTM_CRF/main.py --train
@@ -108,6 +111,7 @@ python downstream_task/code/baseline/task_1/CNN_LSTM_CRF/main.py --train
 
 ### PPS
 **Feature_based:**
+
 First use Scispacy (https://github.com/allenai/scispacy) to detect named entities in patient notes and link each entity to UMLS.
 ```
 python downstream_task/code/baseline/task_2/feature_based/NER.py
@@ -118,6 +122,7 @@ Then train a model with grid search for best hyperparameters.
 python downstream_task/code/baseline/task_2/feature_based/model.py --model LR
 ```
 **BERT**
+
 `train` argument controls whether to train the model. For other parameters, see code.
 ```
 python downstream_task/code/baseline/task_2/BERT/main.py --train
@@ -125,6 +130,7 @@ python downstream_task/code/baseline/task_2/BERT/main.py --train
 
 ### PPR
 **ES**
+
 Elasticsearch and the python package Elasticsearch is required.
 Add index.
 ```
@@ -135,6 +141,7 @@ Query with multithreads.
 python downstream_task/code/baseline/task_3/ES/query.py
 ```
 **EBR**
+
 First generate embeddings for each query and document.
 ```
 python downstream_task/code/baseline/task_3/EBR/embedding.py
@@ -144,6 +151,7 @@ Then perform embedding based retrieval.
 python downstream_task/code/baseline/task_3/EBR/EBR.py
 ```
 **ES+Rerank**
+
 To run rerank, you need first train a BERT model in task 2.
 ```
 python downstream_task/code/baseline/task_3/rerank/rerank.py
@@ -153,6 +161,7 @@ python downstream_task/code/baseline/task_3/rerank/rerank.py
 ### PAR
 Note that to run baseline models for PAR, you have to download PubMed and extract titles and abstracts (see commands above).
 **ES**
+
 Elasticsearch and the python package Elasticsearch is required.
 Add index.
 ```
