@@ -226,7 +226,7 @@ if __name__ == "__main__":
         error_count += result[3]
         patients += result[4]
         
-    json.dump(patients, open("../../meta_data/patient_note_candidates.json", "w"), indent = 4)
+    json.dump(patients, open("../../../meta_data/patient_note_candidates.json", "w"), indent = 4)
 
     stat()
     import ipdb; ipdb.set_trace()

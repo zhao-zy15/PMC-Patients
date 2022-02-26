@@ -1,7 +1,9 @@
 from sklearn import svm
 from sklearn.linear_model.logistic import LogisticRegression
 from sklearn.model_selection import GridSearchCV
+from sklearn.decomposition import IncrementalPCA
 import json
+from tqdm import tqdm
 import argparse
 import numpy as np
 
@@ -18,9 +20,10 @@ def dice(set_1, set_2):
     return 2 * len(set_1 & set_2) / (len(set_1) + len(set_2))
 
 
-patients = json.load(open("../../../../../PMC-Patients_collection/meta_data/PMC-Patients.json", "r"))
+patients = json.load(open("../../../../../meta_data/PMC-Patients.json", "r"))
 uid2age = {}
 uid2gender = {}
+# Convert ages into float numbers.
 for patient in patients:
     uid = patient['patient_uid']
     uid2gender[uid] = patient['gender']
@@ -39,47 +42,49 @@ for patient in patients:
     uid2age[uid] = age
 
 uid2NER = json.load(open("NER.json", "r"))
+train_ins = json.load(open("../../../../../datasets/task_2_patient2patient_similarity/PPS_train.json", "r"))
 
-train_ins = json.load(open("../../../../datasets/task_2_patient2patient_similarity/PPS_train.json", "r"))
+
 X_train = []
 Y_train = []
-for ins in train_ins:
+for ins in tqdm(train_ins):
     uid_1, uid_2, label = ins
-    #label = 1 if label == 2 else label
     age = abs(uid2age[uid_1] - uid2age[uid_2])
     gender = int(uid2gender[uid_1] == uid2gender[uid_2])
     NER_sim = dice(set(uid2NER[uid_1]), set(uid2NER[uid_2]))
-    #X_train.append([age, gender, NER_sim])
-    X_train.append([NER_sim])
+    X_train.append([age, gender, NER_sim])
+    # For ablation test.
+    #X_train.append([NER_sim])
     Y_train.append(label)
 
-dev_ins = json.load(open("../../../../datasets/task_2_patient2patient_similarity/PPS_dev.json", "r"))
+
+dev_ins = json.load(open("../../../../../datasets/task_2_patient2patient_similarity/PPS_dev.json", "r"))
 X_dev = []
 Y_dev = []
-for ins in dev_ins:
+for ins in tqdm(dev_ins):
     uid_1, uid_2, label = ins
-    #label = 1 if label == 2 else label
     age = abs(uid2age[uid_1] - uid2age[uid_2])
     gender = int(uid2gender[uid_1] == uid2gender[uid_2])
     NER_sim = dice(set(uid2NER[uid_1]), set(uid2NER[uid_2]))
-    #X_dev.append([age, gender, NER_sim])
-    X_dev.append([NER_sim])
+    X_dev.append([age, gender, NER_sim])
+    #X_dev.append([NER_sim])
     Y_dev.append(label)
 
-test_ins = json.load(open("../../../../datasets/task_2_patient2patient_similarity/PPS_test.json", "r"))
+
+test_ins = json.load(open("../../../../../datasets/task_2_patient2patient_similarity/PPS_test.json", "r"))
 X_test = []
 Y_test = []
-for ins in test_ins:
+for ins in tqdm(test_ins):
     uid_1, uid_2, label = ins
-    #label = 1 if label == 2 else label
     age = abs(uid2age[uid_1] - uid2age[uid_2])
     gender = int(uid2gender[uid_1] == uid2gender[uid_2])
     NER_sim = dice(set(uid2NER[uid_1]), set(uid2NER[uid_2]))
-    #X_test.append([age, gender, NER_sim])
-    X_test.append([NER_sim])
+    X_test.append([age, gender, NER_sim])
+    #X_test.append([NER_sim])
     Y_test.append(label)
 
 
+# Grid search for best parameters.
 if args.model == "SVM":
     model = svm.SVC(random_state = 21)
     parameters = {"gamma": [1e-4, 1e-3, 1e-2, .1, 1], 'C': [.01, .1, 1, 10, 100]}
@@ -88,6 +93,7 @@ if args.model == "LR":
     parameters = {"penalty": ['l1', 'l2'], 'C': [.01, .1, 1, 10, 100], "multi_class": ['ovr', 'multinomial'], \
         "solver": ["liblinear", "lbfgs", "saga"]}
 
+# Custom train and dev split.
 train_index = [list(range(len(X_train)))]
 dev_index = [list(range(len(X_train), len(X_train) + len(X_dev)))]
 cv = zip(train_index, dev_index)

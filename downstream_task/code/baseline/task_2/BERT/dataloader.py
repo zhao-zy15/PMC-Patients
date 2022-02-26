@@ -25,6 +25,8 @@ class PatientSimilarityDataset(Dataset):
     def __getitem__(self, index):
         assert index < len(self.instances)
         patient_uid1, patient_uid2, similarity = self.instances[index]
+        if similarity == -1:
+            similarity = 0
         patient_1 = self.corpus[patient_uid1]['patient']
         patient_2 = self.corpus[patient_uid2]['patient']
 
@@ -53,7 +55,7 @@ def MyCollateFn(batch):
 
 
 if __name__ == "__main__":
-    data_dir = "../../../../datasets/task_2_patient2patient_similarity"
+    data_dir = "../../../../../datasets/task_2_patient2patient_similarity"
     model_name_or_path = "dmis-lab/biobert-v1.1"
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
     dataset = PatientSimilarityDataset(data_dir, "dev", tokenizer, True)

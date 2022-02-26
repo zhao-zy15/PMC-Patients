@@ -24,7 +24,7 @@ def NER(doc):
 
 
 batch_size = 512
-patients = json.load(open("../../../../../PMC-Patients_collection/meta_data/PMC-Patients.json", "r"))
+patients = json.load(open("../../../../..//meta_data/PMC-Patients.json", "r"))
 entities = {}
 texts = []
 uids = []

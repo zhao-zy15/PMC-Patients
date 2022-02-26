@@ -10,7 +10,7 @@ from threading import Thread, BoundedSemaphore
 from queue import Queue
 
 
-data_dir = "../../../../datasets/task_4_patient2article_retrieval"
+data_dir = "../../../../../datasets/task_4_patient2article_retrieval"
 train_data = json.load(open(os.path.join(data_dir, "PAR_train.json"), "r"))
 dev_data = json.load(open(os.path.join(data_dir, "PAR_dev.json"), "r"))
 test_data = json.load(open(os.path.join(data_dir, "PAR_test.json"), "r"))
@@ -33,7 +33,6 @@ class search_thread(Thread):
         result_ids = [x['_id'] for x in results['hits']['hits'][1:]]
         golden_list = self.rels
         precision = getPrecision(golden_list, result_ids)
-        #NDCG = getNDCG(self.rels[0], self.rels[1], result_ids)
 
         results = es.search(body = query, index = "pubmed_title_abstract", size = 1001, _source = False)
         result_ids = [x['_id'] for x in results['hits']['hits'][1:]]
@@ -49,43 +48,13 @@ class search_thread(Thread):
 
 
 thread_max = BoundedSemaphore(40)
-'''
 q = Queue()
 precisions = []
 recalls_1k = []
 recalls_10k = []
-#NDCGs = []
 RRs = []
 threads = []
-for patient_id in dev_data:
-    thread_max.acquire()
-    t = search_thread(patient_id, dev_data[patient_id], "dev")
-    t.start()
-    threads.append(t)
-for i in threads:
-    i.join()
-
-while not q.empty():
-    result = q.get()
-    RRs.append(result[0])
-    precisions.append(result[1])
-    recalls_1k.append(result[2])
-    recalls_10k.append(result[3])
-    #NDCGs.append(result[3])
-
-print("=========Dev=========")
-print(np.mean(RRs), np.mean(precisions), np.mean(recalls_1k), np.mean(recalls_10k))
-print(len(RRs))
-'''
-
-q = Queue()
-precisions = []
-recalls_1k = []
-recalls_10k = []
-#NDCGs = []
-RRs = []
-threads = []
-for patient_id in test_data:
+for patient_id in tqdm(test_data):
     thread_max.acquire()
     t = search_thread(patient_id, test_data[patient_id], "test")
     t.start()
@@ -99,7 +68,6 @@ while not q.empty():
     precisions.append(result[1])
     recalls_1k.append(result[2])
     recalls_10k.append(result[3])
-    #NDCGs.append(result[3])
 
 print("=========Test=========")
 print(np.mean(RRs), np.mean(precisions), np.mean(recalls_1k), np.mean(recalls_10k))

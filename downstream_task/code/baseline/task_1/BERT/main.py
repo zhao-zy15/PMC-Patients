@@ -10,7 +10,9 @@ from torch.utils.data import DataLoader
 import os
 from tensorboardX import SummaryWriter
 from torch.optim.lr_scheduler import CosineAnnealingLR
-from utils import metric
+import sys
+sys.path.append("..")
+from utils import metric, para_metric
 
 
 def train(args, model, dataloader, dev_dataloader, test_dataloader):
@@ -74,29 +76,39 @@ def train(args, model, dataloader, dev_dataloader, test_dataloader):
                 lr_scheduler.step()
             
             if global_step % args.test_steps == 0:
-                token_acc, confusion, precision, recall, f1 = test(args, model, dev_dataloader)
+                confusion, f1, precision, recall, f1_p, precision_p, recall_p = test(args, model, dev_dataloader)
                 print("======Dev at step {}======".format(global_step))
-                print(token_acc, precision, recall, f1)
+                print("F1:{:.3f}, precision:{:.3f}, recall:{:.3f}".format(f1*100, precision*100, recall*100))
+                print("F1:{:.3f}, precision:{:.3f}, recall:{:.3f}".format(f1_p*100, precision_p*100, recall_p*100))
                 print(confusion)
-                writer.add_scalar("dev_acc", token_acc, global_step = global_step)
+                writer.add_scalar("dev_f1", f1, global_step = global_step)
+                writer.add_scalar("dev_f1_p", f1_p, global_step = global_step)
+
 
             if global_step % args.save_steps == 0:
                 save_path = os.path.join(args.output_dir, f'model_{global_step}.pth')
                 torch.save(model, save_path)
+            
+            if global_step > args.total_steps:
+                break
 
-    
-    token_acc, confusion, precision, recall, f1 = test(args, model, test_dataloader)
+    confusion, f1, precision, recall, f1_p, precision_p, recall_p = test(args, model, test_dataloader)
     print("======Test======")
-    print(token_acc, precision, recall, f1)
+    print("F1:{:.3f}, precision:{:.3f}, recall:{:.3f}".format(f1*100, precision*100, recall*100))
+    print("F1:{:.3f}, precision:{:.3f}, recall:{:.3f}".format(f1_p*100, precision_p*100, recall_p*100))
     print(confusion)
-    writer.add_scalar("test_acc", token_acc, global_step = global_step)
+    writer.add_scalar("test_f1", f1, global_step = global_step)
+    writer.add_scalar("test_f1_p", f1_p, global_step = global_step)
 
 
 def test(args, model, dataloader):
     model.eval()
     steps = 0
+    # Confusion matrix
     confusion = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
     total = np.array([0, 0, 0, 0, 0])
+    para_metrics = np.array([0., 0., 0.])
+    data_count = 0
     with torch.no_grad():
         bar = tqdm(dataloader)
         article_tag = []
@@ -116,19 +128,30 @@ def test(args, model, dataloader):
                     article_tag.append(tags[i].item())
                     article_pred.append(pred[i].item())
                 else:
-                    total_token, right_token, total_ent, pred_ent, right_ent = metric(article_tag, article_pred)
-                    total += np.array([total_token, right_token, total_ent, pred_ent, right_ent])
+                    total += np.array(metric(article_tag, article_pred, args.tag2id))
+                    para_metrics += np.array(para_metric(article_tag, article_pred, args.tag2id))
+                    data_count += 1
                     token_acc = total[1] / total[0]
-                    precision = total[4] / total[3] if total[3] != 0 else 0
-                    recall = total[4] / total[2]
+                    precision = total[4] / total[3] if total[3] != 0 else 1
+                    recall = total[4] / total[2] if total[2] != 0 else 1
                     f1 = (2 * precision * recall) / (precision + recall) if precision + recall != 0 else 0
                     article_pred = [pred[i].item()]
                     article_tag = [tags[i].item()]
-                        
+
             bar.set_description("Step: {}, Acc: {:.4f}, F1: {:.4f}".format(steps, token_acc, f1))
+        
+        total += np.array(metric(article_tag, article_pred, args.tag2id))
+        para_metrics += np.array(para_metric(article_tag, article_pred, args.tag2id))
+        data_count += 1
+
+    precision = total[4] / total[3]
+    recall = total[4] / total[2]
+    f1 = (2 * precision * recall) / (precision + recall) if precision + recall != 0 else 0
+
+    precision_p, recall_p, f1_p = para_metrics / data_count
 
     model.train()
-    return token_acc, confusion, precision, recall, f1
+    return confusion, f1, precision, recall, f1_p, precision_p, recall_p
 
 
 def run(args):
@@ -137,16 +160,20 @@ def run(args):
     np.random.seed(args.seed)  # numpy
     torch.backends.cudnn.deterministic = True  # cudnn
 
-    data_dir = "../../../../datasets/task_1_patient_note_recognition"
+    data_dir = "../../../../../datasets/task_1_patient_note_recognition"
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
     model = BERT_classify(args.model_name_or_path)
     model.to(args.device)
     
     train_dataset = PatientFindingDataset(data_dir, tokenizer, "train", 512)
+    args.tag2id = train_dataset.tag2id
     train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle = True, collate_fn = MyCollateFn)
     dev_dataset = PatientFindingDataset(data_dir, tokenizer, "dev", 512)
     dev_dataloader = DataLoader(dev_dataset, args.batch_size, shuffle = False, collate_fn = MyCollateFn)
-    test_dataset = PatientFindingDataset(data_dir, tokenizer, "test", 512)
+    if args.test_on_human:
+        test_dataset = PatientFindingDataset(data_dir, tokenizer, "human", 512)
+    else:
+        test_dataset = PatientFindingDataset(data_dir, tokenizer, "test", 512)
     test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle = False, collate_fn = MyCollateFn)
 
     if not os.path.exists(args.output_dir):
@@ -160,11 +187,11 @@ def run(args):
         checkpoint = os.path.join(args.output_dir, 'last_model.pth')
         model = torch.load(checkpoint)
         model.to(args.device)
-        test_dataset = PatientFindingDataset(data_dir, tokenizer, "test", 512)
-        test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle = False, collate_fn = MyCollateFn)
-        token_acc, confusion, precision, recall, f1 = test(args, model, test_dataloader)
+
+        confusion, f1, precision, recall, f1_p, precision_p, recall_p = test(args, model, test_dataloader)
         print("======Test======")
-        print(token_acc, precision, recall, f1)
+        print("F1:{:.3f}, precision:{:.3f}, recall:{:.3f}".format(f1*100, precision*100, recall*100))
+        print("F1:{:.3f}, precision:{:.3f}, recall:{:.3f}".format(f1_p*100, precision_p*100, recall_p*100))
         print(confusion)
 
 
@@ -258,6 +285,11 @@ parser.add_argument(
     "--train",
     action = "store_true",
     help = "If train model."
+)
+parser.add_argument(
+    "--test_on_human",
+    action = "store_true",
+    help = "If test model on human annotations."
 )
 args = parser.parse_args()
 run(args)

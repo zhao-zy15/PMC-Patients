@@ -3,7 +3,6 @@ from torch import nn
 import torch.nn.functional as F
 from dataloader import PatientFindingDataset, MyCollateFn
 from torch.utils.data import DataLoader
-from transformers import AutoTokenizer
 import numpy as np
 from torch.nn import init
 from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence, pad_sequence
@@ -147,7 +146,7 @@ class CNN_LSTM_CRF(nn.Module):
         if pretrained_embedding is None:
             self.embedding = nn.Embedding(self.vocab_size, self.embed_dim, padding_idx = 0)
         else:
-            self.embedding = nn.Embedding.from_pretrained(pretrained_embedding, freeze = True, padding_idx = 0)
+            self.embedding = nn.Embedding.from_pretrained(pretrained_embedding, freeze = args.freeze, padding_idx = 0)
         self.convs = nn.ModuleList([nn.Conv2d(1, self.kernel_num, (size, self.embed_dim)) for size in self.kernel_size])
         self.dropout = nn.Dropout(args.dropout)
         self.rnn = nn.LSTM(input_size=self.kernel_num * len(self.kernel_size), hidden_size=self.hidden_dim, \
@@ -205,12 +204,6 @@ class CNN_LSTM_CRF(nn.Module):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--vocab_size",
-        default = 28996,
-        type = int,
-        help = "Vocab size."
-    )
-    parser.add_argument(
         "--kernel_num",
         default = 3,
         type = int,
@@ -230,7 +223,7 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    data_dir = "../../../../datasets/task_1_patient_note_recognition"
+    data_dir = "../../../../../datasets/task_1_patient_note_recognition"
     model_name_or_path = "dmis-lab/biobert-v1.1"
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, max_length = 256)
     args.vocab_size = tokenizer.vocab_size

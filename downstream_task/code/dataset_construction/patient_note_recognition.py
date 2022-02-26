@@ -74,7 +74,7 @@ def ins_generate(patient):
 
 if __name__ == "__main__": 
     # Directory of PMC-Patients   
-    patients = json.load(open("../../../PMC-Patients_collection/meta_data/PMC-Patients.json", "r"))
+    patients = json.load(open("../../../meta_data/PMC-Patients.json", "r"))
     directory = "../../../../PMC_OA"
 
     # For each note, generate one instance, and merge instances of same article later.
@@ -104,5 +104,5 @@ if __name__ == "__main__":
             PNR_dataset.append(temp)
 
     print(len(PNR_dataset))
-    json.dump(PNR_dataset, open("../../meta_data/patient_note_recognition.json", "w"), indent = 4)
+    json.dump(PNR_dataset, open("../../../meta_data/patient_note_recognition.json", "w"), indent = 4)
 

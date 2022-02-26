@@ -9,6 +9,8 @@ from transformers import AutoTokenizer
 class PatientFindingDataset(Dataset):
     def __init__(self, data_dir, tokenizer, mode, max_length):
         assert mode in ["train", "dev", "test", "human"], "mode argument be one of \'train\', \'dev\', \'test\' or \'human\'."
+        if mode == "human":
+            mode = "human_annotations"
         file_name = "PNR_" + mode + ".json"
         articles = json.load(open(os.path.join(data_dir, file_name), "r"))
         self.tokenizer = tokenizer
@@ -17,8 +19,9 @@ class PatientFindingDataset(Dataset):
         self.tags = []
         self.index = []
         for art in articles:
-            self.texts += art['texts']
             self.tags += art['tags']
+            self.texts += art['texts']
+            # Length of each note, used to calculate metrics within an article.
             self.index += [i for i in range(len(art['texts']))]
         self.tag2id = {"B": 1, "I": 2, "O": 0}
 
@@ -46,7 +49,7 @@ def MyCollateFn(batch):
 
 
 if __name__ == "__main__":
-    data_dir = "../../../../datasets/task_1_patient_note_recognition"
+    data_dir = "../../../../../datasets/task_1_patient_note_recognition"
     model_name_or_path = "dmis-lab/biobert-v1.1"
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, max_length = 512)
     dataset = PatientFindingDataset(data_dir, tokenizer, "human", 512)

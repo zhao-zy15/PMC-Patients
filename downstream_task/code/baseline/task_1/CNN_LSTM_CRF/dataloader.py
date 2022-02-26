@@ -11,12 +11,16 @@ from torch.nn.utils.rnn import pad_sequence
 class PatientFindingDataset(Dataset):
     def __init__(self, tokenizer, max_length, data_dir, mode):
         assert mode in ["train", "dev", "test", "human"], "mode argument be one of \'train\', \'dev\', \'test\' or \'human\'."
+        # Use human annotations as golden labels.
+        if mode == "human":
+            mode = "human_annotations"
         file_name = "PNR_" + mode + ".json"
         self.stopword = pw.words('english')
         self.tokenizer = tokenizer
         self.max_length = max_length
         self.instances = json.load(open(os.path.join(data_dir, file_name), "r"))
         self.tag2id = {"<SOS>": 0, "B": 1, "I": 2, "O": 3, "<EOS>": 4}
+        
 
 
     def __getitem__(self, index):
@@ -47,7 +51,7 @@ def MyCollateFn(batch):
 
 
 if __name__ == "__main__":
-    data_dir = "../../../../datasets/task_1_patient_note_recognition"
+    data_dir = "../../../../../datasets/task_1_patient_note_recognition"
     '''
     file_name = "PNR_train.json"
     instances = json.load(open(os.path.join(data_dir, file_name), "r"))

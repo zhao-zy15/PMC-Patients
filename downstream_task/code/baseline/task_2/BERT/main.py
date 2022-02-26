@@ -14,6 +14,9 @@ from torch.optim.lr_scheduler import CosineAnnealingLR
 
 def train(args, model, dataloader, dev_dataloader, test_dataloader):
     writer = SummaryWriter(log_dir = args.output_dir)
+    dev_loss = []
+    best_acc = 0.
+    
     if args.mse:
         lossFn = nn.MSELoss()
     else:
@@ -48,7 +51,8 @@ def train(args, model, dataloader, dev_dataloader, test_dataloader):
 
     global_step = 0
     model.train()
-    while global_step <= args.total_steps:
+    # For early stopping.
+    while global_step <= args.total_steps if args.total_steps > 0 else 1000000000000:
         bar = tqdm(dataloader)
         for _, batch in enumerate(bar):
             global_step += 1
@@ -58,15 +62,14 @@ def train(args, model, dataloader, dev_dataloader, test_dataloader):
             label = batch[3].to(args.device)
             _, prob = model(input_ids, attention_mask, token_type_ids)
             if args.mse:
-                label = label - 1
                 pred = []
                 for score in prob:
-                    if score.item() < -0.5:
-                        pred.append(-1)
-                    elif score.item() < 0.5:
+                    if score.item() < 0.5:
                         pred.append(0)
-                    else:
+                    elif score.item() < 1.5:
                         pred.append(1)
+                    else:
+                        pred.append(2)
                 pred = torch.tensor(pred).to(args.device)
                 loss = lossFn(prob, label.float())
             else:
@@ -89,28 +92,38 @@ def train(args, model, dataloader, dev_dataloader, test_dataloader):
                 lr_scheduler.step()
             
             if global_step % args.test_steps == 0:
-                total, acc, test_acc, ocnfusion = test(args, model, dev_dataloader)
+                total, acc, test_acc, confusion, loss = test(args, model, dev_dataloader)
                 print("======Dev at step {}======".format(global_step))
                 print(total, acc, test_acc)
+                print(loss)
                 print(confusion)
                 writer.add_scalar("dev_acc", test_acc, global_step = global_step)
+                writer.add_scalar("dev_loss", loss, global_step = global_step)
+                if test_acc > best_acc:
+                    best_acc = test_acc
+                    torch.save(model, os.path.join(args.output_dir, 'best_model.pth'))
+                if len(dev_loss) > 2 and loss > dev_loss[-1] and dev_loss[-1] > dev_loss[-2]:
+                    return
+                else:
+                    dev_loss.append(loss)
 
-            if global_step % args.save_steps == 0:
-                save_path = os.path.join(args.output_dir, f'model_{global_step}.pth')
-                torch.save(model, save_path)
+            if args.total_steps > 0 and global_step > args.total_steps:
+                return
+
 
     
-    total, acc, test_acc, confusion = test(args, model, test_dataloader)
-    print("======Test======")
-    print(total, acc, test_acc)
-    print(confusion)
-    writer.add_scalar("test_acc", test_acc, global_step = global_step)
 
 
 def test(args, model, dataloader):
+    print("====Begin test=====")
     model.eval()
     steps = 0
+    total_loss = 0.
     confusion = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+    if args.mse:
+        lossFn = nn.MSELoss()
+    else:
+        lossFn = nn.CrossEntropyLoss()
     with torch.no_grad():
         bar = tqdm(dataloader)
         total = [0, 0, 0]
@@ -122,27 +135,30 @@ def test(args, model, dataloader):
             label = batch[3].to(args.device)
             _, prob = model(input_ids, attention_mask, token_type_ids)
             if args.mse:
-                label = label - 1
                 pred = []
                 for score in prob:
-                    if score.item() < -0.5:
-                        pred.append(-1)
-                    elif score.item() < 0.5:
+                    if score.item() < 0.5:
                         pred.append(0)
-                    else:
+                    elif score.item() < 1.5:
                         pred.append(1)
+                    else:
+                        pred.append(2)
                 pred = torch.tensor(pred).to(args.device)
+                loss = lossFn(prob, label.float())
             else:
+                loss = lossFn(prob, label)
                 pred = torch.argmax(prob, axis = 1)
+            total_loss += loss.item()
             for i in range(pred.shape[0]):
                 confusion[label[i].item()][pred[i].item()] += 1
                 total[pred[i].item()] += 1
                 if label[i].item() == pred[i].item():
                     acc[label[i].item()] += 1
             bar.set_description("Step: {}, Acc: {:.4f}".format(steps, sum(acc) / sum(total)))
+            steps += 1
 
     model.train()
-    return total, acc, sum(acc) / sum(total), confusion
+    return total, acc, sum(acc) / sum(total), confusion, total_loss / steps
 
 
 def run(args):
@@ -151,7 +167,7 @@ def run(args):
     np.random.seed(args.seed)  # numpy
     torch.backends.cudnn.deterministic = True  # cudnn
 
-    data_dir = "../../../../datasets/task_2_patient2patient_similarity"
+    data_dir = "../../../../../datasets/task_2_patient2patient_similarity"
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
     model = monoBERT(args.model_name_or_path, args.mse)
     model.to(args.device)
@@ -170,20 +186,21 @@ def run(args):
         train(args, model, train_dataloader, dev_dataloader, test_dataloader)
         torch.save(model, os.path.join(args.output_dir, 'last_model.pth'))
         tokenizer.save_pretrained(args.output_dir)
+        model = torch.load(os.path.join(args.output_dir, "best_model.pth"))
+        total, acc, test_acc, confusion, loss = test(args, model, test_dataloader)
+        print("======Test======")
+        print(total, acc, test_acc)
+        print(loss)
+        print(confusion)
     else:
-        checkpoint = os.path.join(args.output_dir, 'last_model.pth')
+        checkpoint = os.path.join(args.output_dir, 'best_model.pth')
         model = torch.load(checkpoint)
         model.to(args.device)
         test_dataset = PatientSimilarityDataset(data_dir, "test", tokenizer)
         test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle = False, collate_fn = MyCollateFn)
-        total, acc, test_acc, confusion = test(args, model, test_dataloader)
+        total, acc, test_acc, confusion, loss = test(args, model, test_dataloader)
         print("======Test======")
-        print(total, acc, test_acc, confusion)
-        test_dataset = PatientSimilarityDataset(data_dir, "test", tokenizer, True)
-        test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle = False, collate_fn = MyCollateFn)
-        total, acc, test_acc, confusion = test(args, model, test_dataloader)
-        print("======Test======")
-        print(total, acc, test_acc, confusion)
+        print(total, acc, test_acc, confusion, loss)
 
 
 parser = argparse.ArgumentParser()
@@ -219,7 +236,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--total_steps",
-    default = 2000,
+    default = 20000,
     type = int,
     help = "Number of total steps for training."
 )
@@ -231,19 +248,19 @@ parser.add_argument(
 )
 parser.add_argument(
     "--warmup_steps",
-    default = 100,
+    default = 5000,
     type = int,
     help = "Warmup steps."
 )
 parser.add_argument(
     "--test_steps",
-    default = 1000,
+    default = 20000,
     type = int,
     help = "Number of steps for each test performing."
 )
 parser.add_argument(
     "--save_steps",
-    default = 1000,
+    default = 100000,
     type = int,
     help = "Number of steps for each checkpoint."
 )

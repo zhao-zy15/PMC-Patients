@@ -209,7 +209,7 @@ if __name__ == "__main__":
     new_data = []
     patients = set()
     
-    data = json.load(open("../../meta_data/patient_note_candidates.json", "r"))
+    data = json.load(open("../../../meta_data/patient_note_candidates.json", "r"))
     for dat in tqdm(data):
         # Remove duplicates
         if dat['patient'] in patients:
@@ -262,8 +262,8 @@ if __name__ == "__main__":
         PMIDs.append(temp['PMID'])
         patients.append(temp)
 
-    json.dump(patients, open("../../meta_data/PMC-Patients.json", "w"), indent = 4)
-    json.dump(list(set(PMIDs)), open("../../meta_data/PMIDs.json", "w"), indent = 4)
+    json.dump(patients, open("../../../meta_data/PMC-Patients.json", "w"), indent = 4)
+    json.dump(list(set(PMIDs)), open("../../../meta_data/PMIDs.json", "w"), indent = 4)
     
     #import ipdb; ipdb.set_trace()
 

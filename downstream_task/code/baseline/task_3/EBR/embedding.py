@@ -34,7 +34,7 @@ def MyCollateFn(batch):
 
 model_name_or_path = "dmis-lab/biobert-v1.1"
 tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, max_length = 512)
-dataset = MyDataset(tokenizer, "../../../../meta_data/PMC-Patients.json")
+dataset = MyDataset(tokenizer, "../../../../../meta_data/PMC-Patients.json")
 batch_size = 512
 device = "cuda:0"
 dataloader = DataLoader(dataset, batch_size = batch_size, shuffle = False, collate_fn = MyCollateFn)
@@ -43,22 +43,7 @@ model = AutoModel.from_pretrained(model_name_or_path)
 model.to(device)
 model.eval()
 
-def cal_dist(id1, id2):
-    input_ids = torch.tensor(dataset[id1][0]).unsqueeze(0).to(device)
-    attention_mask = torch.tensor(dataset[id1][1]).unsqueeze(0).to(device)
-    token_type_ids = torch.tensor(dataset[id1][2]).unsqueeze(0).to(device)
-    x = model(input_ids, attention_mask, token_type_ids)[1].detach().numpy()
-    x = (x / np.linalg.norm(x)).reshape(-1)
-
-    input_ids = torch.tensor(dataset[id2][0]).unsqueeze(0).to(device)
-    attention_mask = torch.tensor(dataset[id2][1]).unsqueeze(0).to(device)
-    token_type_ids = torch.tensor(dataset[id2][2]).unsqueeze(0).to(device)
-    y = model(input_ids, attention_mask, token_type_ids)[1].detach().numpy()
-    y = (y / np.linalg.norm(y)).reshape(-1)
-    return x, y, x.dot(y)
-
-import ipdb; ipdb.set_trace()
-
+# Generate embeddings for all the patient notes.
 embeddings = None
 bar = tqdm(dataloader)
 for _, batch in enumerate(bar):

@@ -7,7 +7,7 @@ If you have already downloaded PMC OA and PubMed abstracts on your device, skip 
 
 
 ## PMC-Patients Collection
-Codes for PMC-Patients collection are in directory `PMC-Patients_collection/code` and dataset is stored in `PMC-Patients_collection/meta_data`.
+Codes for PMC-Patients collection are in directory `PMC-Patients_collection/code/` and dataset is stored in `meta_data/`.
 ### Preprocessing
 Enumerate all .csv files in PMC OA, filtering those without PMID, and write file_path, PMID, License of each article in a new file.
 ```
@@ -39,7 +39,7 @@ Annotate similarity and relevance.
 ```
 python PMC-Patients_collection/code/PMC-Patients_collection/annotate.py
 ```
-The results are stored in `PMC-Patients_collection/meta_data/`. 
+The results are stored in `meta_data/`. 
 
 Patients notes are stored in `PMC-Patients.json`, which is a list of dict with keys:
 - `patient_id`: string. A continuous id of patients, starting from 0.
@@ -56,7 +56,7 @@ Patient-patient similarity is stored in `patient2patient_similarity.json`, which
 Patient-article relevance is stored in `patient2article_relevance.json`, which is a dict. The keys are `patient_uid` and each value is a list of PMIDs of relevant articles. Note that source article for the patient is included.
 
 ## Downstream Tasks
-Codes of downstream tasks are in directory `downstream_task/code`. Datasets for four tasks are in `downstream_task/datasets`.
+Codes of downstream tasks are in directory `downstream_task/code/`. Datasets for four tasks are in `datasets/`.
 ### Patient Note Recognition (PNR)
 Generate whole PNR dataset (without train/dev/test split) by 
 ```
@@ -89,7 +89,7 @@ Split by `dataset_split.py`. PPR dataset is a dict where the keys are `patient_u
 
 ## Baseline Models
 Codes for build and evaluate baseline models for downstream tasks are in directory `downstream_task/code/baseline`. Evaluation codes are reusable.
-To simply reproduce baselines, download xxxxx and unzip it to directory `downstrea_task/datasets`.
+To simply reproduce baselines, download xxxxx and unzip it to directory `datasets/`.
 ### PNR
 
 **Demo_based:**
@@ -134,7 +134,7 @@ python downstream_task/code/baseline/task_2/BERT/main.py --train
 
 ### PPR
 
-**ES**
+**BM25**
 
 Elasticsearch and the python package Elasticsearch is required.
 Add index.
@@ -157,18 +157,11 @@ Then perform embedding based retrieval.
 python downstream_task/code/baseline/task_3/EBR/EBR.py
 ```
 
-**ES+Rerank**
-
-To run rerank, you need first train a BERT model in task 2.
-```
-python downstream_task/code/baseline/task_3/rerank/rerank.py
-
-```
 
 ### PAR
 Note that to run baseline models for PAR, you have to download PubMed and extract titles and abstracts (see commands above).
 
-**ES**
+**BM25**
 
 Elasticsearch and the python package Elasticsearch is required.
 Add index.
@@ -180,4 +173,20 @@ Query with multithreads.
 python downstream_task/code/baseline/task_4/ES/query.py
 ```
 
+**EBR**
+
+First generate embeddings for each query and document.
+```
+python downstream_task/code/baseline/task_4/EBR/embedding.py
+```
+Then perform embedding based retrieval.
+```
+python downstream_task/code/baseline/task_4/EBR/EBR.py
+```
+
+**Co-citation**
+
+```
+python downstream_task/code/baseline/task_4/co-citation/co-citation.py
+```
 

@@ -1,9 +1,9 @@
 import json
 from tqdm import tqdm,trange
 
-train = json.load(open("../../datasets/task_1_patient_note_recognition/PNR_train.json", "r"))
-dev = json.load(open("../../datasets/task_1_patient_note_recognition/PNR_dev.json", "r"))
-test = json.load(open("../../datasets/task_1_patient_note_recognition/PNR_test.json", "r"))
+train = json.load(open("../../../datasets/task_1_patient_note_recognition/PNR_train.json", "r"))
+dev = json.load(open("../../../datasets/task_1_patient_note_recognition/PNR_dev.json", "r"))
+test = json.load(open("../../../datasets/task_1_patient_note_recognition/PNR_test.json", "r"))
 
 
 article_count = 0
@@ -57,7 +57,7 @@ print("Patient note count: ", patient_count)
 total_tags = sum(tag_count.values())
 print("Tags distribution: ", ["{} {:.2f}".format(k, v*100/total_tags) for k, v in tag_count.items()])
 
-human_set = json.load(open("../../datasets/task_1_patient_note_recognition/PNR_human.json", "r"))
+human_set = json.load(open("../../../datasets/task_1_patient_note_recognition/PNR_human.json", "r"))
 article_count = 0
 patient_count = 0
 tag_count = {"B": 0, "I": 0, "O": 0}

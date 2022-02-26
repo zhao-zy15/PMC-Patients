@@ -19,7 +19,7 @@ class BERT_classify(nn.Module):
 
 
 if __name__ == "__main__":
-    data_dir = "../../../../datasets/task_1_patient_note_recognition"
+    data_dir = "../../../../../datasets/task_1_patient_note_recognition"
     model_name_or_path = "dmis-lab/biobert-v1.1"
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, max_length = 512)
     dataset = PatientFindingDataset(data_dir, tokenizer, "test", 512)

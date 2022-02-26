@@ -29,7 +29,7 @@ def extract_mesh(file_name):
 
 if __name__ == "__main__":
     # PMIDS to extract Mesh terms.
-    PMIDs = json.load(open("../../meta_data/PMIDs.json", "r"))
+    PMIDs = json.load(open("../../../meta_data/PMIDs.json", "r"))
     PMIDs = set(PMIDs)
     print(len(PMIDs))
     data_dir = "../../../../pubmed/pubmed_abstract_xml"
@@ -43,4 +43,4 @@ if __name__ == "__main__":
         PMID2Mesh.update(result)
 
     #import ipdb; ipdb.set_trace()
-    json.dump(PMID2Mesh, open("../../meta_data/PMID2Mesh.json", "w"), indent = 4)
+    json.dump(PMID2Mesh, open("../../../meta_data/PMID2Mesh.json", "w"), indent = 4)

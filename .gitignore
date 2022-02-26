@@ -136,9 +136,16 @@ dmypy.json
 
 # Data
 *.json
+*.npy
 
 # figures
 figures/
 
 # output
-output/
+output*/
+
+# datasets
+*.tar.gz
+
+# word vectors
+PMC-w2v.bin

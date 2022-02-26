@@ -7,7 +7,7 @@ import numpy as np
 
 # PMID2patient_uid dict
 PMID2patients = {}
-patients = json.load(open("../../meta_data/PMC-Patients.json", "r"))
+patients = json.load(open("../../../meta_data/PMC-Patients.json", "r"))
 
 for patient in patients:
     if patient['PMID'] in PMID2patients.keys():
@@ -84,7 +84,7 @@ for article in PMID2patients.keys():
     relevant_article_with_note[article] = list(filter(lambda x: x in PMID2patients.keys(), relevant_article_PMID[article]))
 
 """
-    Check symmetry of relevant annotation.
+# Check symmetry of relevant annotation.
 total = set()
 for patient in relevant_article_with_note:
     for rel in relevant_article_with_note[patient]:
@@ -95,9 +95,6 @@ for x,y in total:
         print(x,y)
         import ipdb; ipdb.set_trace()
 """
-
-#json.dump(relevant_article_PMID, open("../../meta_data/relevant_article_PMID.json", "w"), indent = 4)
-#json.dump(relevant_article_with_note, open("../../meta_data/relevant_article_with_note.json", "w"), indent = 4)
 
 # Define patient2patient similarity.
 patient2patient_similarity = {}
@@ -119,7 +116,7 @@ for patient in tqdm(patients):
     patient2patient_similarity[patient_id] = (sim1_patient_id, sim2_patient_id)
 
 """
-    Check symmetry of similarity annotation.
+# Check symmetry of similarity annotation.
 total = set()
 for patient in patient2patient_similarity:
     for rel in patient2patient_similarity[patient][0]:
@@ -130,7 +127,7 @@ for x,y in total:
         import ipdb; ipdb.set_trace()
 """
 
-json.dump(patient2patient_similarity, open("../../meta_data/patient2patient_similarity.json", "w"), indent = 4)
+json.dump(patient2patient_similarity, open("../../../meta_data/patient2patient_similarity.json", "w"), indent = 4)
 del patient2patient_similarity
 
 
@@ -152,5 +149,5 @@ for patient in tqdm(patients):
     # Exclude relevant articles without abstract or title.
     patient2article_relevance[patient_id] = list(filter(lambda x: x in PMIDs, patient2article_relevance[patient_id]))
 
-json.dump(patient2article_relevance, open("../../meta_data/patient2article_relevance.json", "w"), indent = 4)
+json.dump(patient2article_relevance, open("../../../meta_data/patient2article_relevance.json", "w"), indent = 4)
 

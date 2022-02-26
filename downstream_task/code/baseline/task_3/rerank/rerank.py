@@ -1,12 +1,13 @@
 import torch
 import torch.nn.functional as F
 import numpy as np
+import os
 import json
 from transformers import AutoTokenizer, AutoModel
 from torch.utils.data import Dataset, DataLoader
 from tqdm import tqdm
 import sys
-sys.path.append("../../task_2")
+sys.path.append("../../task_2/BERT")
 from model import monoBERT
 sys.path.append("..")
 from utils import getPrecision, getRR, getRecall
@@ -38,17 +39,22 @@ def MyCollateFn(batch):
     return input_ids, attention_mask, token_type_ids
 
 
-model_name_or_path = "dmis-lab/biobert-v1.1"
+# PPS model output_dir.
+output_dir = "../../task_2/BERT/output_56_hard"
+model_path = os.path.join(output_dir, "best_model.pth")
+args = torch.load(os.path.join(output_dir, "training_args.bin"))
+model_name_or_path = args.model_name_or_path
 tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, max_length = 512)
-patients = json.load(open("../../../../meta_data/PMC-Patients.json", "r"))
+patients = json.load(open("../../../../../meta_data/PMC-Patients.json", "r"))
 patient_text = {patient['patient_uid']: patient['patient'] for patient in patients}
 batch_size = 512
 max_length = 512
 device = "cuda:0"
+# Candidates given by Elasticsearch.
 candidates = json.load(open("../patient2patient_retrieved_test.json"))
 
-model_path = "../../task_2/BioBERT/last_model.pth"
-model = monoBERT(model_name_or_path, False)
+mse = args.mse
+model = monoBERT(model_name_or_path, True)
 model = torch.load(model_path)
 model.to(device)
 model.eval()
@@ -59,6 +65,7 @@ attention_mask = []
 token_type_ids = []
 pairs = []
 for patient in tqdm(candidates):
+    # Only rerank top 1k candidates due to time cost.
     for candidate in candidates[patient][:1000]:
         if (candidate, patient) not in PPS:
             tokenized = tokenizer(patient_text[patient], patient_text[candidate], max_length = max_length, padding = "max_length", truncation = True)
@@ -72,37 +79,53 @@ for patient in tqdm(candidates):
                 token_type_ids = torch.tensor(token_type_ids).to(device)
                 with torch.no_grad():
                     _, score = model(input_ids, attention_mask, token_type_ids)
-                prob = F.softmax(score, dim = 1)
-                prob = prob.detach().cpu().numpy()
-                for i in range(len(pairs)):
-                    PPS[pairs[i]] = prob[i].tolist()
+                if mse:
+                    score = score.detach().cpu()
+                    for i in range(len(pairs)):
+                        PPS[pairs[i]] = score[i].item()
+                else:
+                    prob = F.softmax(score, dim = 1)
+                    prob = prob.detach().cpu().numpy()
+                    for i in range(len(pairs)):
+                        PPS[pairs[i]] = prob[i].tolist()
+
                 input_ids = []
                 attention_mask = []
                 token_type_ids = []
                 pairs = []
 
+# Remaning samples.
 if input_ids:
     input_ids = torch.tensor(input_ids).to(device)
     attention_mask = torch.tensor(attention_mask).to(device)
     token_type_ids = torch.tensor(token_type_ids).to(device)
     with torch.no_grad():
         _, score = model(input_ids, attention_mask, token_type_ids)
-    prob = F.softmax(score, dim = 1)
-    prob = prob.detach().cpu().numpy()
-    for i in range(len(pairs)):
-        PPS[pairs[i]] = prob[i].tolist()
+    if mse:
+        score = score.detach().cpu()
+        for i in range(len(pairs)):
+            PPS[pairs[i]] = score[i].item()
+    else:
+        prob = F.softmax(score, dim = 1)
+        prob = prob.detach().cpu().numpy()
+        for i in range(len(pairs)):
+            PPS[pairs[i]] = prob[i].tolist()
 
-json.dump({' '.join(k): v for k,v in PPS.items()}, open("PPS.json", "w"), indent = 4)
-import ipdb; ipdb.set_trace()
+
+# Cache rerank scores.
+#json.dump({' '.join(k): v for k,v in PPS.items()}, open("PPS.json", "w"), indent = 4)
 
 
-PPS = json.load(open("PPS.json", "r"))
+#PPS = json.load(open("PPS.json", "r"))
 RR = []
 precision = []
+recall_100 = []
 recall = []
-weight = [0, 1, 2]
+# Predicted number of each label.
 predict = [0, 0, 0]
-dataset = json.load(open("../../../../datasets/task_3_patient2patient_retrieval/PPS_test.json"))
+# Not used for MSE loss. For CE loss, weights for three probabilities of labels.
+weight = [0, 1, 2]
+dataset = json.load(open("../../../../../datasets/task_3_patient2patient_retrieval/PPR_test.json"))
 for patient in tqdm(candidates):
     temp = []
     for candidate in candidates[patient][:1000]:
@@ -110,17 +133,29 @@ for patient in tqdm(candidates):
             temp.append((candidate, PPS[' '.join((patient, candidate))]))
         else:
             temp.append((candidate, PPS[' '.join((candidate, patient))]))
-    for item in temp:
-        predict[np.argmax(item[1])] += 1
-    temp = sorted(temp, key = lambda x: np.dot(x[1], weight), reverse = True)
+    if mse:
+        temp = sorted(temp, key = lambda x: x[1], reverse = True)
+        for item in temp:
+            if item < 0.5:
+                predict[0] += 1
+            elif item < 1.5:
+                predict[1] += 1
+            else:
+                predict[2] += 1
+    else:
+        temp = sorted(temp, key = lambda x: np.dot(x[1], weight), reverse = True)
+        for item in temp:
+            predict[np.argmax(item[1])] += 1
     result_ids = [x[0] for x in temp]
     golden_labels = dataset[patient][0] + dataset[patient][1]
     RR.append(getRR(golden_labels, result_ids))
     precision.append(getPrecision(golden_labels, result_ids[:10]))
+    recall_100.append(getRecall(golden_labels, result_ids[:100]))
     recall.append(getRecall(golden_labels, result_ids))
 
+# Average predicted number of each label.
 print(np.array(predict) / len(RR))
-print(np.mean(RR), np.mean(precision), np.mean(recall))
+print(np.mean(RR), np.mean(precision), np.mean(recall_100), np.mean(recall))
 print(len(RR))
     
 

@@ -2,7 +2,7 @@ import json
 import numpy as np
 
 
-train = json.load(open("../../datasets/task_3_patient2patient_retrieval/PPR_train.json", "r"))
+train = json.load(open("../../../datasets/task_3_patient2patient_retrieval/PPR_train.json", "r"))
 sim_1 = []
 sim_2 = []
 for patient_id in train:
@@ -16,7 +16,7 @@ print("Avg similarity 2 labels per query: ", np.mean(sim_2))
 print("Avg similarity in total: ", (np.sum(sim_1) + np.sum(sim_2)) / len(sim_1))
 print("Queries: ", len(train))
 
-dev = json.load(open("../../datasets/task_3_patient2patient_retrieval/PPR_dev.json", "r"))
+dev = json.load(open("../../../datasets/task_3_patient2patient_retrieval/PPR_dev.json", "r"))
 sim_1 = []
 sim_2 = []
 for patient_id in dev:
@@ -30,7 +30,7 @@ print("Avg similarity 2 labels per query: ", np.mean(sim_2))
 print("Avg similarity in total: ", (np.sum(sim_1) + np.sum(sim_2)) / len(sim_1))
 print("Queries: ", len(dev))
 
-test = json.load(open("../../datasets/task_3_patient2patient_retrieval/PPR_test.json", "r"))
+test = json.load(open("../../../datasets/task_3_patient2patient_retrieval/PPR_test.json", "r"))
 sim_1 = []
 sim_2 = []
 for patient_id in test:
