@@ -54,7 +54,7 @@ device = "cuda:0"
 candidates = json.load(open("../patient2patient_retrieved_test.json"))
 
 mse = args.mse
-'''
+
 model = monoBERT(model_name_or_path, True)
 model = torch.load(model_path)
 model.to(device)
@@ -114,8 +114,8 @@ if input_ids:
 
 
 # Cache rerank scores.
-#json.dump({' '.join(k): v for k,v in PPS.items()}, open("PPS.json", "w"), indent = 4)
-'''
+json.dump({' '.join(k): v for k,v in PPS.items()}, open("PPS.json", "w"), indent = 4)
+
 
 PPS = json.load(open("PPS.json", "r"))
 RR = []

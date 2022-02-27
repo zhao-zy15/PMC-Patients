@@ -149,7 +149,7 @@ def test(args, model, dataloader):
     f1 = (2 * precision * recall) / (precision + recall) if precision + recall != 0 else 0
 
     precision_p, recall_p, f1_p = para_metrics / data_count
-
+    
     model.train()
     return confusion, f1, precision, recall, f1_p, precision_p, recall_p
 
@@ -228,38 +228,38 @@ parser.add_argument(
 )
 parser.add_argument(
     "--total_steps",
-    default = 2000,
+    default = 50000,
     type = int,
     help = "Number of total steps for training."
 )
 parser.add_argument(
     "--weight_decay",
-    default = 0.05,
+    default = 0.01,
     type = float,
     help = "Weight decay rate."
 )
 parser.add_argument(
     "--warmup_steps",
-    default = 100,
+    default = 50000,
     type = int,
     help = "Warmup steps."
 )
 parser.add_argument(
     "--test_steps",
-    default = 1000,
+    default = 50000,
     type = int,
     help = "Number of steps for each test performing."
 )
 parser.add_argument(
     "--save_steps",
-    default = 1000,
+    default = 1000000,
     type = int,
     help = "Number of steps for each checkpoint."
 )
 parser.add_argument(
     "--schedule", 
     type=str, 
-    default="cosine",
+    default="constant",
     choices=["linear", "cosine", "constant"], 
     help="Schedule."
 )

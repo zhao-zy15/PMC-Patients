@@ -1,0 +1,16 @@
+elasticsearch==8.0.0
+faiss==1.5.3
+gensim==4.1.2
+ipdb==0.13.7
+matplotlib==3.3.4
+nltk==3.6.2
+numpy==1.19.2
+pandas==1.1.5
+scikit_learn==1.0.2
+scispacy==0.4.0
+spacy==3.2.2
+tensorboardX==2.5
+torch==1.7.1
+tqdm==4.60.0
+transformers==3.4.0
+word2number==1.1

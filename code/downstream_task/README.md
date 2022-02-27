@@ -109,7 +109,7 @@ python baseline/task_3/Dice/dice.py
 
 
 ### PAR
-Note that to run baseline models for PAR, you have to download PubMed and extract titles and abstracts (see commands above).
+Note that to run baseline models for PAR, you have to download PubMed and extract titles and abstracts (run `code/PMC-Patients_collection/pubmed_extractors/extract_title_abstract.py`).
 
 **BM25**
 

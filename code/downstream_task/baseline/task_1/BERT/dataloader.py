@@ -37,7 +37,6 @@ class PatientFindingDataset(Dataset):
         return len(self.texts)
 
 
-
 def MyCollateFn(batch):
     batch = list(zip(*batch))
     input_ids = torch.tensor(batch[0])
