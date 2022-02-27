@@ -108,5 +108,5 @@ ax2.plot([0, 1], [1, 1],transform=ax2.transAxes, **kwargs)
 ax3.plot([1, 0], [0, 0], transform=ax3.transAxes, **kwargs)
 
 ax3.legend()
-plt.savefig("../../figures/relational_annotation_distribution.pdf", format = "pdf")
+plt.savefig("../../../figures/relational_annotation_distribution.pdf", format = "pdf")
 plt.clf()

@@ -44,7 +44,7 @@ def plot_confusion_matrix(cm, classes, file_name, normalize=True,  cmap=plt.cm.B
 
 if __name__ == '__main__':
     cm = np.array([[9012, 467, 0], [1226, 6315, 123], [4, 131, 1680]])
-    plot_confusion_matrix(cm, [0, 1, 2], "Confusion_matrix_PPS.pdf", True)
+    plot_confusion_matrix(cm, [0, 1, 2], "../../../figures/Confusion_matrix_PPS.pdf", True)
 
     cm = np.array([[597, 4, 5], [2, 1494, 60], [15, 126, 4800]])
-    plot_confusion_matrix(cm, ["B", "I", "O"], "Confusion_matrix_PNR.pdf", True)
+    plot_confusion_matrix(cm, ["B", "I", "O"], "../../../figures/Confusion_matrix_PNR.pdf", True)

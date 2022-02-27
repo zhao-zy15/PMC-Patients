@@ -40,7 +40,7 @@ def MyCollateFn(batch):
 
 
 # PPS model output_dir.
-output_dir = "../../task_2/BERT/output_56_hard"
+output_dir = "../../task_2/BERT/output"
 model_path = os.path.join(output_dir, "best_model.pth")
 args = torch.load(os.path.join(output_dir, "training_args.bin"))
 model_name_or_path = args.model_name_or_path
@@ -54,6 +54,7 @@ device = "cuda:0"
 candidates = json.load(open("../patient2patient_retrieved_test.json"))
 
 mse = args.mse
+'''
 model = monoBERT(model_name_or_path, True)
 model = torch.load(model_path)
 model.to(device)
@@ -114,9 +115,9 @@ if input_ids:
 
 # Cache rerank scores.
 #json.dump({' '.join(k): v for k,v in PPS.items()}, open("PPS.json", "w"), indent = 4)
+'''
 
-
-#PPS = json.load(open("PPS.json", "r"))
+PPS = json.load(open("PPS.json", "r"))
 RR = []
 precision = []
 recall_100 = []
@@ -128,7 +129,7 @@ weight = [0, 1, 2]
 dataset = json.load(open("../../../../../datasets/task_3_patient2patient_retrieval/PPR_test.json"))
 for patient in tqdm(candidates):
     temp = []
-    for candidate in candidates[patient][:1000]:
+    for candidate in candidates[patient][:100]:
         if ' '.join((patient, candidate)) in PPS:
             temp.append((candidate, PPS[' '.join((patient, candidate))]))
         else:
@@ -136,9 +137,9 @@ for patient in tqdm(candidates):
     if mse:
         temp = sorted(temp, key = lambda x: x[1], reverse = True)
         for item in temp:
-            if item < 0.5:
+            if item[1] < 0.5:
                 predict[0] += 1
-            elif item < 1.5:
+            elif item[1] < 1.5:
                 predict[1] += 1
             else:
                 predict[2] += 1

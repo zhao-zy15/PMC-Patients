@@ -94,4 +94,4 @@ for i in [3,2,1,0]:
 plt.xticks([0.16, 0.41], ["Article", "Note"])
 plt.legend(fontsize = 10)
 plt.tight_layout(pad = 0.01)
-plt.savefig("../../figures/article_type_distribution.pdf", format = "pdf")
+plt.savefig("../../../figures/article_type_distribution.pdf", format = "pdf")
