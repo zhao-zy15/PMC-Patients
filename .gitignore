@@ -150,3 +150,6 @@ output*/
 
 # word vectors
 PMC-w2v.bin
+
+# Generate citations
+add_citation.py

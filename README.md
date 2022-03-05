@@ -13,6 +13,8 @@ PMC-Patients dataset can be downloaded via [this link](https://drive.google.com/
 
 For dataset details, see `README.md` in `datasets` and `meta_data` directory.
 
+All articles used in PMC-Patients are credited in `meta_data/PMC-Patients_citations.json`.
+
 ## Code
 To reproduce construction of PMC-Patients, see `code/PMC-Patients_collection/`. To try our baselines, see `code/downstream_task/`.
 
