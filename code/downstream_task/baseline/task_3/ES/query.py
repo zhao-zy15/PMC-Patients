@@ -27,6 +27,8 @@ class search_thread(Thread):
         query = {"query": {"match": {"patient": {"query": query_text}}}}
         results = es.search(body = query, index = "patient_" + self.mode, size = 10001, _source = False)
 
+        assert results['hits']['hits'][0]['_id'] == self.patient_id
+
         result_ids_with_score = [(x['_id'], x['_score']) for x in results['hits']['hits'][1:]]
         
         result_ids = [x['_id'] for x in results['hits']['hits'][1:11]]
@@ -77,4 +79,4 @@ print("=========Test=========")
 print(np.mean(RRs), np.mean(precisions), np.mean(recalls_1k), np.mean(recalls_10k))
 print(len(RRs))
 json.dump(result_ids, open("../patient2patient_retrieved_test.json", "w"), indent = 4)
-json.dump(result_ids_with_score, open("../full_patient2patient_retrieved_test.json", "w"), indent = 4)
+json.dump(result_ids_with_score, open("../patient2patient_retrieved_test_with_score.json", "w"), indent = 4)

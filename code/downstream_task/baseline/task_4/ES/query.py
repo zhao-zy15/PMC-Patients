@@ -78,5 +78,5 @@ print("=========Test=========")
 print(np.mean(RRs), np.mean(precisions), np.mean(recalls_1k), np.mean(recalls_10k))
 print(len(RRs))
 json.dump(result_ids, open("../patient2article_retrieved_test.json", "w"), indent = 4)
-json.dump(result_ids_with_score, open("../full_patient2article_retrieved_test.json", "w"), indent = 4)
+json.dump(result_ids_with_score, open("../patient2article_retrieved_test_with_score.json", "w"), indent = 4)
 
