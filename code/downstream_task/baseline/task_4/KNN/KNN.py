@@ -15,6 +15,8 @@ RR = []
 precision = []
 recall_1k = []
 recall = []
+results = {}
+results_with_score = {}
 for patient in tqdm(test_data):
     candidate = {}
     for patient_id, score in PPR[patient][:k]:
@@ -38,8 +40,9 @@ for patient in tqdm(test_data):
 
     golden_labels = test_data[patient]
     pred_labels = sorted(list(candidate.items()), key = lambda x: x[1], reverse = True)
+    results_with_score[patient] = pred_labels
     pred_labels = [x[0] for x in pred_labels]
-
+    results[patient] = pred_labels
     RR.append(getRR(golden_labels, pred_labels))
     precision.append(getPrecision(golden_labels, pred_labels[:10]))
     recall_1k.append(getRecall(golden_labels, pred_labels[:1000]))
@@ -47,3 +50,6 @@ for patient in tqdm(test_data):
 
 print(np.mean(RR), np.mean(precision), np.mean(recall_1k), np.mean(recall))
 print(k)
+import ipdb; ipdb.set_trace()
+json.dump(results, open("../knn_patient2article_retrieved_test.json", "w"), indent = 4)
+json.dump(results_with_score, open("../knn_patient2article_retrieved_test_with_score.json", "w"), indent = 4)
