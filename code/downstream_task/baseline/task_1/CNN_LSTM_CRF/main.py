@@ -11,6 +11,7 @@ from torch.utils.data import DataLoader
 from gensim.models import KeyedVectors
 import os
 from tensorboardX import SummaryWriter
+from torch.optim.lr_scheduler import CosineAnnealingLR
 import sys
 sys.path.append("..")
 from utils import batch_metric, batch_para_metric
@@ -22,6 +23,8 @@ def train(args, model, dataloader, dev_dataloader, test_dataloader):
     best_f1 = 0.
     
     optimizer = Adam(model.parameters(), lr = args.learning_rate)
+
+    lr_scheduler = CosineAnnealingLR(optimizer, 50)
 
     for epoch in range(args.total_steps):
         model.train()
@@ -49,9 +52,10 @@ def train(args, model, dataloader, dev_dataloader, test_dataloader):
             loss.backward()
             bar.set_description("Step: {}, Loss: {:.4f}, Acc: {:.4f}, F1: {:.4f}".format(global_step + len(bar) * epoch, loss.item(), acc, f1))
 
-            #nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
+            nn.utils.clip_grad_norm_(model.parameters(), args.max_grad_norm)
             optimizer.step()
             model.zero_grad()
+            lr_scheduler.step()
 
             
         if (epoch + 1) % args.test_steps == 0:

@@ -15,6 +15,12 @@ For dataset details, see `README.md` in `datasets` and `meta_data` directory.
 
 All articles used in PMC-Patients are credited in `meta_data/PMC-Patients_citations.json`.
 
+### Dataset Version Logs
+Generally **PMC-Patients** will only be updated incrementally when new data are ready to release, so there's no need to keep an old version and the download link would stay the same.
+
+`v1.2`: Add `PMC-Patients_human.json` of ground-truth patient notes and their demographics annotated by experts.
+`v1.1`: Add citations of articles used in **PMC-Patients**.
+
 ## Code
 To reproduce construction of PMC-Patients, see `code/PMC-Patients_collection/`. To try our baselines, see `code/downstream_task/`.
 

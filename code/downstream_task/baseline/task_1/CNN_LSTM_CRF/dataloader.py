@@ -52,8 +52,8 @@ def MyCollateFn(batch):
 
 if __name__ == "__main__":
     data_dir = "../../../../../datasets/task_1_patient_note_recognition"
-    '''
-    file_name = "PNR_train.json"
+    
+    file_name = "PNR_test.json"
     instances = json.load(open(os.path.join(data_dir, file_name), "r"))
     length = []
     st = pw.words('english')
@@ -61,7 +61,7 @@ if __name__ == "__main__":
         for text in ins['texts']:
             length.append(len(list(filter(lambda x: x not in st, text.split())) ))
     import ipdb; ipdb.set_trace()
-    '''
+    
     model_name_or_path = "dmis-lab/biobert-v1.1"
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, max_length = 512)
     dataset = PatientFindingDataset(tokenizer, 256, data_dir, "test")

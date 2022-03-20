@@ -13,6 +13,8 @@ PMC-Patients-training/test/dev, each of which is a list of dict with keys:
 - `age`: list of tuples. Each entry is in format `(value, unit)` where value is a float number and unit is in 'year', 'month', 'week', 'day' and 'hour' indicating age unit. For example, `[[1.0, 'year'], [2.0, 'month']]` indicating the patient is a one-year- and two-month-old infant.
 - `gender`: 'M' or 'F'. Male or Female.
 
+Note that `PMC-Patients_human.json` present ground-truth patient notes, their ages, and genders. The `human_patient_id` and `human_patient_uid` are different from those in `PMC-Patients` since it's difficult to align human annotations with automatic annotations.
+
 ### task_1_patient_note_recognition/PNR_train.json
 
 List of dict with keys:
