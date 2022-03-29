@@ -4,7 +4,7 @@ PMC-Patients meta data can be download via [this link](https://drive.google.com/
 ### PMIDs.json
 
 PMIDs of articles from which PMC-Patients are extracted.
-List of string, length 140,987 in V1.0.
+List of string, length 140,897 in V1.x.
 
 ### train_PMIDs.json & dev_PMIDs.json & test_PMIDs.json & human_PMIDs.json
 
