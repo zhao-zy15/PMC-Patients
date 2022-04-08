@@ -95,7 +95,7 @@ for patient in tqdm(candidates):
                 token_type_ids = []
                 pairs = []
 
-# Remaning samples.
+# Remaining samples.
 if input_ids:
     input_ids = torch.tensor(input_ids).to(device)
     attention_mask = torch.tensor(attention_mask).to(device)
