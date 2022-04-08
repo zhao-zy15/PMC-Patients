@@ -35,3 +35,9 @@ A dict where the keys are `patient_uid` of queries and each entry is two lists o
 ### task_4_patient2article_retrieval/PAR_train.json
 
 A dict where the keys are `patient_uid` of queries and each entry is a list of `PMID`, representing articles relevant to the query.
+
+### PPR_PAR_human_annotations.json
+
+Ground-truth of patient-patient similarity and patient-article relevance of top 5 results given by BM25 on human-annotated patient notes.
+
+The keys are `human_patient_id` and each entry is a dict with `PMID`s and `patient_uid`s as keys, representing articles and patients, respectively, and numbers as values indicating type of relevance/similarity. For details, see our paper.

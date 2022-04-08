@@ -18,6 +18,7 @@ All articles used in PMC-Patients are credited in `meta_data/PMC-Patients_citati
 ### Dataset Version Logs
 Generally **PMC-Patients** will only be updated incrementally when new data are ready to release, so there's no need to keep an old version and the download link would stay the same.
 
+- `v1.3`: Add `PPR_PAR_human_annotations.json` of ground-truth patient-patient similarity and patient-article relevance.
 - `v1.2`: Add `PMC-Patients_human.json` of ground-truth patient notes and their demographics annotated by experts.
 - `v1.1`: Add citations of articles used in **PMC-Patients**.
 
