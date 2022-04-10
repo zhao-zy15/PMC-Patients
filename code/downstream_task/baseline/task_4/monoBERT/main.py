@@ -8,7 +8,6 @@ from tqdm import trange, tqdm
 from transformers import AutoTokenizer, AdamW, get_linear_schedule_with_warmup, get_cosine_schedule_with_warmup, get_constant_schedule_with_warmup
 from torch.utils.data import DataLoader
 import os
-from torch.optim.lr_scheduler import CosineAnnealingLR
 import wandb
 
 
@@ -30,8 +29,6 @@ def train(args, model, dataloader, dev_dataloader, test_dataloader):
             "weight_decay": 0.0},
     ]
     optimizer = AdamW(optimizer_grouped_parameters, lr = args.learning_rate)
-
-    lr_scheduler = CosineAnnealingLR(optimizer, 5000)
 
     if args.schedule == 'linear':
         scheduler = get_linear_schedule_with_warmup(
@@ -80,7 +77,6 @@ def train(args, model, dataloader, dev_dataloader, test_dataloader):
                 optimizer.step()
                 scheduler.step()
                 model.zero_grad()
-                lr_scheduler.step()
             
             if global_step % args.test_steps == 0:
                 test_loss, test_acc = test(args, model, dev_dataloader)
@@ -103,10 +99,10 @@ def train(args, model, dataloader, dev_dataloader, test_dataloader):
 
 
 def test(args, model, dataloader):
-    print("====Begin test=====")
     model.eval()
     steps = 0
     total_loss = 0.
+    total = [0, 0]
     lossFn = nn.MSELoss()
     
     with torch.no_grad():
@@ -127,12 +123,14 @@ def test(args, model, dataloader):
             loss = lossFn(prob, label.float())
 
             total_loss += loss.item()
+            total[0] += sum(pred == label).item()
+            total[1] += label.shape[0]
             acc = sum(pred == label).item() / label.shape[0]
             bar.set_description("Step: {}, Loss: {:.4f}, Acc: {:.4f}".format(steps, loss, acc))
             steps += 1
 
     model.train()
-    return total_loss / steps, acc
+    return total_loss / steps, total[0] / total[1]
 
 
 def run(args):
@@ -152,7 +150,7 @@ def run(args):
     dev_dataloader = DataLoader(dev_dataset, args.batch_size, shuffle = True, collate_fn = lambda x: MyCollateFn(x, args.max_length, args.neg_ratio))
     test_dataset = PARDataset(data_dir, "test", tokenizer, args.max_length, "both")
     test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle = True, collate_fn = lambda x: MyCollateFn(x, args.max_length, args.neg_ratio))
-    
+
     if not os.path.exists(args.output_dir):
         os.mkdir(args.output_dir)
     if args.train:

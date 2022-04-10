@@ -16,6 +16,6 @@ class monoBERT(nn.Module):
     def forward(self, input_ids, attention_mask, token_type_ids):
         pooled = self.bert(input_ids, attention_mask, token_type_ids)[1]
         score = self.linear(pooled)
-        score = score.squeeze()
+        score = score.squeeze(1)
         return pooled, score
 

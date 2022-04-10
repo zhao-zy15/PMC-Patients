@@ -19,11 +19,6 @@ class PARDataset(Dataset):
         patients = json.load(open(os.path.join(data_dir, "../PMC-Patients_" + mode + ".json"), "r"))
         self.patients = {patient['patient_uid']: patient for patient in patients}
         self.pubmed = json.load(open("../pubmed_PAR.json", "r"))
-        self.citations = {}
-        pubmed_citation_dir = "../../../../../../pubmed/pubmed_citations"
-        for file_name in os.listdir(pubmed_citation_dir):
-            cites = json.load(open(os.path.join(pubmed_citation_dir, file_name), "r"))
-            self.citations.update(cites)
 
 
     def __getitem__(self, index):
@@ -39,12 +34,9 @@ class PARDataset(Dataset):
         #max_length_2 = max(self.max_length[1], sum(self.max_length) - len(tokenized_1['input_ids']))
         tokenized_2 = self.tokenizer(article, max_length = self.max_length[1] + 1, padding = "max_length", truncation = True)
         
-        # For hard negative sampling
-        candidates = set(self.citations[PMID])
-        candidates = candidates - set(self.rel[patient_uid])
 
         return tokenized_1["input_ids"] + tokenized_2["input_ids"][1:], tokenized_1["attention_mask"] + tokenized_2["attention_mask"][1:], \
-            tokenized_1["token_type_ids"] + [1] * (len(tokenized_2['input_ids']) - 1), PMID, self.rel[patient_uid], list(candidates)
+            tokenized_1["token_type_ids"] + [1] * (len(tokenized_2['input_ids']) - 1), PMID, self.rel[patient_uid]
 
     
     def __len__(self):
@@ -66,14 +58,12 @@ def MyCollateFn(batch, max_length, neg_ratio):
         neg_samples[i] = []
         permutation = np.random.permutation(PMIDs)
         for PMID in permutation:
-            if PMID in batch[-2][i]:
+            if PMID in batch[-1][i]:
                 continue
             else:
                 neg_samples[i].append(PMID2id[PMID])
                 if len(neg_samples[i]) == neg_ratio:
                     break
-        if len(batch[-1][i]) > 0:
-            neg_samples[i].append(np.random.choice(candidates, 1))
 
     for x in neg_samples:
         for y in neg_samples[x]:

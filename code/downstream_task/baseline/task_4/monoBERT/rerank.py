@@ -20,20 +20,20 @@ model_name_or_path = args.model_name_or_path
 tokenizer = AutoTokenizer.from_pretrained(model_name_or_path, max_length = 512)
 patients = json.load(open("../../../../../meta_data/PMC-Patients.json", "r"))
 patient_text = {patient['patient_uid']: patient['patient'] for patient in patients}
-
+'''
 pubmed = {}
 data_dir = "../../../../../../pubmed/pubmed_title_abstract/"
 for file_name in tqdm(os.listdir(data_dir)):
     articles = json.load(open(os.path.join(data_dir, file_name), "r"))
     for PMID in articles:
         pubmed[PMID] = articles[PMID]
-
+'''
 batch_size = 512
 device = "cuda:1"
 
 # Candidates given by KNN.
 candidates = json.load(open("../knn_patient2article_retrieved_test.json"))
-
+'''
 model = monoBERT(model_name_or_path)
 model = torch.load(model_path)
 model.to(device)
@@ -86,7 +86,7 @@ if input_ids:
 
 # Cache rerank scores.
 json.dump({' '.join(k): v for k,v in PAR.items()}, open("PAR.json", "w"), indent = 4)
-
+'''
 
 PAR = json.load(open("PAR.json", "r"))
 RR = []
@@ -98,7 +98,7 @@ predict = [0, 0]
 dataset = json.load(open("../../../../../datasets/task_4_patient2article_retrieval/PAR_test.json"))
 for patient in tqdm(candidates):
     temp = []
-    for candidate in candidates[patient]:
+    for candidate in candidates[patient][:100]:
         if ' '.join((patient, candidate)) in PAR:
             temp.append((candidate, PAR[' '.join((patient, candidate))]))
         else:
@@ -110,7 +110,7 @@ for patient in tqdm(candidates):
         else:
             predict[1] += 1
     result_ids = [x[0] for x in temp]
-    golden_labels = dataset[patient][0] + dataset[patient][1]
+    golden_labels = dataset[patient]
     RR.append(getRR(golden_labels, result_ids))
     precision.append(getPrecision(golden_labels, result_ids[:10]))
     recall_100.append(getRecall(golden_labels, result_ids[:100]))
