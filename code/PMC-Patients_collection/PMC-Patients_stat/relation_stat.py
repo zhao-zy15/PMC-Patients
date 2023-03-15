@@ -27,14 +27,13 @@ length = list(filter(lambda x: x <= 100, length))
 data = pd.DataFrame({"id":range(len(length)),"len":length})
 groups = data.groupby(["len"]).count()
 
-plt.rcParams['figure.figsize'] = (7,2.8)
+plt.rcParams['figure.figsize'] = (8.5,2)
 plt.rcParams['savefig.dpi'] = 300
 plt.rcParams['figure.dpi'] = 300
 
-ax1 = plt.axes([.06, 0.15, .4, .85])
-ax2 = plt.axes([.58, 0.15, .4, .57])
-ax3 = plt.axes([.58, 0.77, .4, .23])
-
+ax1 = plt.axes([.05, 0.215, .4, .78])
+ax2 = plt.axes([.56, 0.215, .4, .523])
+ax3 = plt.axes([.56, 0.784, .4, .211])
 
 ax1.set_xlabel('Number of relevance annotations', fontsize=12)
 ax1.set_ylabel('Percent of patients', fontsize=12)
@@ -51,12 +50,8 @@ ax1.annotate(text = "Avg. {:.2f}".format(mean_length), xy = (18.6, 5.1), \
 patient_similarity = json.load(open(os.path.join(meta_data_dir, "patient2patient_similarity.json"), "r"))
 
 print("====== Patient Similarity=======")
-length_1 = [len(item[0]) for item in patient_similarity.values()]
-print("Similarity 1 count: ", sum(length_1))
-length_2 = [len(item[1]) for item in patient_similarity.values()]
-print("Similarity 2 count: ", sum(length_2))
-length = [len(item[0]) + len(item[1]) for item in patient_similarity.values()]
-print("Similarity total count: ", sum(length))
+length = [len(item) for item in patient_similarity.values()]
+print("Similarity count: ", sum(length))
 print("Average similarity per note: ", np.mean(length))
 print("Max Relevance per article: ", np.max(length))
 
@@ -107,6 +102,6 @@ kwargs = dict(marker=[(-1, -d), (1, d)], markersize=8,
 ax2.plot([0, 1], [1, 1],transform=ax2.transAxes, **kwargs)
 ax3.plot([1, 0], [0, 0], transform=ax3.transAxes, **kwargs)
 
-ax3.legend()
-plt.savefig("../../../figures/relational_annotation_distribution.pdf", format = "pdf")
+ax3.legend(loc = 'upper right')
+plt.savefig("../../../figures/relational_annotation_distribution.pdf")
 plt.clf()

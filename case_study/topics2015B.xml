@@ -1,0 +1,142 @@
+<topics>
+  <topic number="1" type="diagnosis">
+    <description>A 44 yo male is brought to the emergency room after multiple bouts of vomiting that has a &quot;coffee ground&quot; appearance. His heart rate is 135 bpm and blood pressure is 70/40 mmHg. Physical exam findings include decreased mental status and cool extremities. He receives a rapid infusion of crystalloid solution followed by packed red blood cell transfusion and is admitted to the ICU for further care.</description>
+    <summary>A 44-year-old man with coffee-ground emesis, tachycardia, hypoxia,  hypotension and  cool, clammy extremities.</summary>
+  </topic>
+  <topic number="2" type="diagnosis">
+    <description>A 62 yo male presents with four days of non-productive cough and one day of fever. He is on immunosuppressive medications, including prednisone. He is admitted to the hospital, and his work-up includes bronchoscopy with bronchoalveolar lavage (BAL). BAL fluid examination reveals owl's eye inclusion bodies in the nuclei of infection cells.</description>
+    <summary>A 62-year-old immunosuppressed male with fever, cough and intranuclear inclusion bodies in bronchoalveolar lavage</summary>
+  </topic>
+  <topic number="3" type="diagnosis">
+    <description>A 65 yo male with no significant history of cardiovascular disease presents to the emergency room with acute onset of shortness of breath, tachypnea, and left-sided chest pain that worsens with inspiration. Of note, he underwent a right total hip replacement two weeks prior to presentation and  was unable to begin physical therapy and rehabilitation for several days following the surgery due to poor pain management. Relevant physical exam findings include a respiratory rate of 35 and right calf pain.</description>
+    <summary>A 65-year-old male presents with dyspnea, tachypnea, chest pain on inspiration, and swelling and pain in the right calf. </summary>
+  </topic>
+  <topic number="4" type="diagnosis">
+    <description>An 82-year-old woman comes to the emergency department because of chest pain and shortness of breath after being awakened in the morning by stabbing substernal chest pain radiating to the left shoulder and jaw. The patient had hypertension, renal-artery stenosis with chronic renal insufficiency, hypercholesterolemia, osteoporosis and dementia. Blood pressure was 199/108 mm Hg, respiratory rate 18 bpm, oxygen saturation 98% on ambient air. The heart sounds were rapid and with no murmurs. CK-MB was 10.9 ng/ml, CK was 89 U/l, CK index was 12.2% and Troponin T was 0.40 ng/ml. An EKG showed sinus regular tachycardia of 119 bpm, with ST-segment elevations up to 3 mm in V1, V2, and V3. A chest radiograph showed low lung volumes and right basilar subsegmental atelectasis. Coronary angiography showed no stenosis or clinically significant disease. Left ventriculography revealed akinesis of the anterior wall, hypokinesis of the apical and distal inferior walls, and compensatory hyperkinesis of the basal anterior and basal inferior walls. A transthoracic echocardiogram showed severe segmental left ventricular dysfunction involving the septum, anteroseptal territory, and apex. The overall left ventricular systolic function was mildly impaired and there was mild mitral regurgitation.</description>
+    <summary>82-year-old woman awakened by acute stabbing chest pain, with ST-segment elevation, hypertension, sinus tachycardia, no diseases on coronary angiography and left ventricular dysfunction on ventriculography.</summary>
+  </topic>
+  <topic number="5" type="diagnosis">
+    <description>A 31-year-old woman with no previous medical problems comes to the emergency room with a history of 2 weeks of joint pain and fatigue. Initially she had right ankle swelling and difficulty standing up and walking, all of which resolved after a few days. For the past several days she has had pain, swelling and stiffness in her knees, hips and right elbow. She also reports intermittent fevers ranging from 38.2 to 39.4 degrees Celsius and chest pain.</description>
+    <summary>Young adult woman with 2 weeks of fever and migrating joint inflammation.</summary>
+  </topic>
+  <topic number="6" type="diagnosis">
+    <description>A 46-year-old woman presents  with a 9 month history of weight loss (20 lb), sweating, insomnia and diarrhea. She reports to have been eating more than normal and that her heart sometimes races for no reason. On physical examination her hands are warm and sweaty, her pulse is irregular at 110bpm and there is hyperreflexia and mild exophthalmia.</description>
+    <summary>A 46-year-old woman with sweaty hands, exophthalmia, and weight loss despite increased eating.</summary>
+  </topic>
+  <topic number="7" type="diagnosis">
+    <description>A 20 yo female college student with no significant past medical history presents with a chief complaint of fatigue. She reports increased sleep and appetite over the past few months as well as difficulty concentrating on her schoolwork. She no longer enjoys spending time with her friends and feels guilty for not spending more time with her family. Her physical exam and laboratory tests, including hemoglobin, hematocrit and thyroid stimulating hormone, are within normal limits.</description>
+    <summary>A 22 year old female presents with changes in appetite and sleeping, fatigue, diminished ability to think or concentrate, anhedonia and feelings of guilt.</summary>
+  </topic>
+  <topic number="8" type="diagnosis">
+    <description>A 10 yo boy with nighttime snoring, pauses in breathing, and restlessness with nighttime awakenings. No history of headache or night terrors. The boy's teacher recently contacted his parents because she was concerned about his declining grades, lack of attention, and excessive sleepiness during class.</description>
+    <summary>A 10-year-old boy with difficulty concentrating, daytime sleepiness, and failure to thrive. The boy sleeps restlessly, snores, sweats, breathes heavily through his mouth and gasps in his sleep. </summary>
+  </topic>
+  <topic number="9" type="diagnosis">
+    <description>A 10 year old child is brought to the emergency room complaining of myalgia, cough, and shortness of breath.  Two weeks ago the patient was seen by his pediatrician for low-grade fever, abdominal pain, and diarrhea, diagnosed with a viral illness, and prescribed OTC medications. Three weeks ago the family returned home after a stay with relatives on a farm that raises domestic pigs for consumption. Vital signs: T: 39.5 C, BP: 90/60 HR: 120/min RR: 40/min. Physical exam findings include cyanosis,  slight stiffness of the neck,  and  marked periorbital edema. Lab results include WBC 25,000, with 25% Eosinophils, and an unremarkable urinalysis.</description>
+    <summary>A 10 year old child with recent history of pork consumption presents with fever, myalgia, facial edema and eosinophilia</summary>
+  </topic>
+  <topic number="10" type="diagnosis">
+    <description>A 38 year old woman complains of severe premenstrual and menstrual pelvic pain, heavy, irregular periods and occasional spotting between periods. Past medical history remarkable for  two years of infertility treatment and an ectopic pregnancy at age 26.</description>
+    <summary>A 38 year old woman with severe dysmenorrhea, menorrhagia, and menometrorrhagia. PMH of infertility treatment and ectopic pregnancy</summary>
+  </topic>
+  <topic number="11" type="test">
+    <description>A 56-year old Caucasian female complains of being markedly more sensitive to the cold than most people. She also gets tired easily, has decreased appetite, and has recently tried home remedies for her constipation. Physical examination reveals hyporeflexia with delayed relaxation of knee and ankle reflexes, and very dry skin. She moves and talks slowly.</description>
+    <summary>A 56-year old Caucasian female presents with sensitivity to cold, fatigue, and constipation. Physical examination reveals hyporeflexia with delayed relaxation of knee and ankle reflexes, and very dry skin.</summary>
+    <diagnosis>Hypothyroidism</diagnosis>
+  </topic>
+  <topic number="12" type="test">
+    <description>A 44-year-old man was recently in an automobile accident where he sustained a skull fracture. In the emergency room, he noted clear fluid dripping from his nose. The following day he started complaining of severe headache and fever. Nuchal rigidity was found on physical examination.</description>
+    <summary>A 44-year-old man complains of severe headache and fever. Nuchal rigidity was found on physical examination.</summary>
+    <diagnosis>Bacterial Meningitis</diagnosis>
+  </topic>
+  <topic number="13" type="test">
+    <description>A 5-year-old boy presents to the emergency department with complaints of progressively worsening dysphagia, drooling, fever and vocal changes. He is toxic-appearing, and leans forward while sitting on his mother's lap. He is drooling and speaks with a muffled &quot;hot potato&quot; voice. The parents deny the possibility of foreign body ingestion or trauma, and they report that they are delaying some of his vaccines.</description>
+    <summary>A 5-year-old boy presents with difficulty in breathing, stridor, drooling, fever, dysphagia and voice change.</summary>
+    <diagnosis>Epiglottitis</diagnosis>
+  </topic>
+  <topic number="14" type="test">
+    <description>A 27-year-old woman at 11 weeks gestation in her second pregnancy is found to have a hemoglobin (Hb) of 9.0 g/dL, white blood cell count 6.3 x 109/L, platelet count 119 x 109/L, mean corpuscular volume 109 fL. Further investigations reveal mild iron deficiency. She already receives iron supplementation. The obstetrician repeats the complete blood cell count 2 weeks later. The Hb is 8.9 g/dL, WBC count 7.1 x 109/L, and platelets 108 x 109/L. She describes difficulty swallowing. A reticulocyte count is performed and found elevated at 180 x 109/L. The obstetrician requests a hematology consult. The following additional results were found: Negative DAT, normal clotting screen, elevated LDH (2000 IU/L), normal urea and electrolytes, normal alanine aminotransferase (ALT), anisocytosis, poikilocytosis, no fragments, no agglutination, polychromasia and presence of hemosiderin in the urine.</description>
+    <summary>A young woman in her second gestation presenting with anemia resistant to improvement by iron supplementation, elevated LDH, anisocytosis, poikilocytosis, hemosiderinuria and normal clotting screen.</summary>
+    <diagnosis>Paroxysmal nocturnal hemoglobinuria</diagnosis>
+  </topic>
+  <topic number="15" type="test">
+    <description>Karen is a 72-year-old woman with hypertension and type 2 diabetes, who was hospitalized for cryptogenic stroke two weeks ago. At the time, computed tomography was negative for brain hemorrhage and she was given thrombolytic therapy with resolution of her symptoms. Transesophageal echocardiogram and magnetic resonance angiogram of brain and great vessels found no evidence of abnormalities. She presents currently with a blood pressure of 120/70 mm Hg, normal glucose, and normal sinus rhythm on a 12-lead electrocardiogram. She reports history of occasional palpitations, shortness of breath and chest pain lasting for a few minutes and then stopping on their own.</description>
+    <summary>A 72-year-old woman with history of hypertension, type 2 diabetes, cryptogenic stroke, normal EKG, normal echocardiogram, normal angiograms, and complaints of occasional shortness of breath and palpitations.</summary>
+    <diagnosis>Paroxysmal  atrial fibrillation</diagnosis>
+  </topic>
+  <topic number="16" type="test">
+    <description>A 4 year old boy presents to the emergency room with wheezing. He has had a history of allergic rhinitis, but no history of wheezing. His mother reports that 5 hours ago patient was playing in the backyard sandbox when she heard him suddenly start coughing. The coughing lasted only moments, but he has been audibly wheezing since. Mother was concerned, because his breathing has not returned to normal, so she brought him to the ED. On exam, the child is playful and well appearing. Wheezing is heard in the mid-right chest area. O2 sats are 100% on room air.</description>
+    <summary>A 4 year old boy presents with wheezing after playing in the backyard unobserved.</summary>
+    <diagnosis>Foreign Body Aspiration</diagnosis>
+  </topic>
+  <topic number="17" type="test">
+    <description>A 32 year old female with no previous medical history presents to clinic to discuss lab results from her most recent pap smear. She reports no complaints and is in general good health. The results of her PAP were cytology negative, HPV positive.</description>
+    <summary>A 32 year old female with screening that was positive for human papilloma virus with normal Pap smears.</summary>
+    <diagnosis>Cervical Cancer precursor</diagnosis>
+  </topic>
+  <topic number="18" type="test">
+    <description>A 65 yo African-American male with shortness of breath related to exertion that has been worsening over the past three weeks. He also has difficulty breathing when lying flat and has started using two to three extra pillows at night. Significant physical exam findings include bibasilar lung crackles, pitting ankle edema and jugular venous distension.</description>
+    <summary>A 65-year-old African-American male with progressive dyspnea on exertion and while lying flat; bilateral pitting lower-extremity edema. The lungs revealed bilateral basilar crackles.</summary>
+    <diagnosis>Congestive Heart Failure</diagnosis>
+  </topic>
+  <topic number="19" type="test">
+    <description>A 66yo female with significant smoking history and chronic cough for the past two years presents with recent, progressive shortness of breath. She is in moderate respiratory distress after walking from the waiting room to the examination room. Physical exam reveals mildly distended neck veins, a barrel-shaped chest, and moderate inspiratory and expiratory wheezes. She has smoked 1 to 2 packs per days for the past 47 years.</description>
+    <summary>A 66-year-old female smoker presents with worsening dyspnea, productive chronic cough, moderate respiratory distress and unintentional weight loss.</summary>
+    <diagnosis>Chronic Obstructive Pulmonary Disease</diagnosis>
+  </topic>
+  <topic number="20" type="test">
+    <description>An 89-year-old man was brought to the emergency department by his wife and son after six months of progressive changes in cognition and personality. He began to have poor memory, difficulty expressing himself, and exhibited unusual behaviors, such as pouring milk onto the table and undressing immediately after getting dressed. He is unable to dress, bathe, use the toilet, or walk independently. On examination the patient's temperature was 36.5°C (97.7°F), the heart rate 61 bpm in an irregular rhythm, the blood pressure 144/78 mm Hg, and the respiratory rate 18 bpm. The patient was alert and oriented to self and city but not year. He frequently interrupted the examiner. He repeatedly reached out to grab things in front of him, including the examiner's tie and face. He could not spell the word &quot;world&quot; backward, could not follow commands involving multiple steps and was unable to perform simple calculations. His speech was fluent, but he often used similar-sounding word substitutions. He could immediately recall three out of three words but recalled none of them after 5 minutes. Examination of the cranial nerves revealed clinically significant paratonic rigidity. Myoclonic jerks were seen in the arms, with symmetrically brisk reflexes. The reflexes in the legs were normal.</description>
+    <summary>An 89-year-old man with progressive change in personality, poor memory, and myoclonic jerks.</summary>
+    <diagnosis>Creutzfeldt-Jakob disease</diagnosis>
+  </topic>
+  <topic number="21" type="treatment">
+    <description>A 32-year-old male presents to your office complaining of diarrhea, abdominal cramping and flatulence. Stools are greasy and foul-smelling. He also has loss of appetite and malaise. He recently returned home from a hiking trip in the mountains where he drank water from natural sources.  An iodine-stained stool smear revealed ellipsoidal cysts with smooth, well-defined walls and 2+ nuclei.</description>
+    <summary>A 32-year-old male presents with diarrhea and foul-smelling stools. Stool smear reveals protozoan parasites.</summary>
+    <diagnosis>Giardiasis</diagnosis>
+  </topic>
+  <topic number="22" type="treatment">
+    <description>A 65-year-old male with a history of tuberculosis has started to complain of productive cough with tinges of blood. Chest X-ray reveals a round opaque mass within a cavity in his left upper lobe. The spherical mass moved in the cavity during supine and prone CT imaging. Culture of the sputum revealed an organism with septated, low-angle branching hyphae that had straight, parallel walls.</description>
+    <summary>A 65-year-old male complains of productive cough with tinges of blood. Chest X-ray reveals a round opaque mass within a cavity in his lung. Culture of the sputum revealed fungal elements.</summary>
+    <diagnosis>Aspergillosis / Aspergilloma</diagnosis>
+  </topic>
+  <topic number="23" type="treatment">
+    <description>An 18-year-old male returning from a recent vacation in Asia presents to the ER with a sudden onset of high fever, chills, facial flushing, epistaxis and severe headache and joint pain. His complete blood count reveals leukopenia, increased hematocrit concentration and thrombocytopenia.</description>
+    <summary>An 18-year-old male returned from Asia a week ago. He presents with high fever, severe headache and joint pain. His blood analysis reveals leukopenia, increased hematocrit and thrombocytopenia.</summary>
+    <diagnosis>Dengue</diagnosis>
+  </topic>
+  <topic number="24" type="treatment">
+    <description>A 31 yo male with no significant past medical history presents with productive cough and chest pain. He reports developing cold symptoms one week ago that were improving until two days ago, when he developed a new fever, chills, and worsening cough. He has right-sided chest pain that is aggravated by coughing. His wife also had cold symptoms a week ago but is now feeling well. Vitals signs include temperature 103.4, pulse 105, blood pressure 120/80, and respiratory rate 15. Lung exam reveals expiratory wheezing, decreased breath sounds, and egophany in the left lower lung field.</description>
+    <summary>A 31 year old male presents with productive cough, chest pain, fever and chills. On exam he has audible wheezing with decreased breath sounds and dullness to percussion.</summary>
+    <diagnosis>Community Acquired Pneumonia (CAP)</diagnosis>
+  </topic>
+  <topic number="25" type="treatment">
+    <description>A 10-year-old boy comes to the emergency department for evaluation of right knee pain. The child's guardians stated that he had been complaining of knee pain for the past 4 days and it had been getting progressively worse. There was no history of trauma. The day before the visit the boy developed a fever, and over the past day he has become increasingly lethargic. On physical examination blood pressure was 117/75 mm Hg,  HR 138 bpm, temperature 38.1 C (100.5 F), respiration 28 bpm, oxygen saturation 97%. There was edema and tenderness of the right thigh and knee, as well as effusion and extremely limited range of motion. Sensation and motor tone were normal. Plain radiography and CT showed an osteolytic lesion.</description>
+    <summary>10-year-old boy with progressive right knee and left leg pain and edema, lethargy and an osteolytic lesion. No history of trauma, fever, tachycardia, or urinary incontinence.</summary>
+    <diagnosis>osteomyelitis</diagnosis>
+  </topic>
+  <topic number="26" type="treatment">
+    <description>A 28 yo female G1P0A0 is admitted to the Ob/Gyn service for non-ruptured ectopic pregnancy. Past medical history is remarkable for obesity, a non-complicated appendectomy at age 8, infertility treatment for the past 3 years, and pelvic laparoscopy during which minor right Fallopian tube adhesions were cauterized. Her LMP was 8 weeks prior to admission. Beta HCG is 100 mIU. The attending physician usually treats unruptured ecoptic pregnancies laparoscopically but is concerned about the patient's obesity and history of adhesions.</description>
+    <summary>An obese 28 yo female with non-ruptured ectopic pregnancy and history of adhesions.</summary>
+    <diagnosis>ectopic pregnancy</diagnosis>
+  </topic>
+  <topic number="27" type="treatment">
+    <description>A 15 yo girl accompanied by her mother is referred for evaluation by the school. The girl has more than expected absences in the last three month, appears to be constantly tired and sleepy in class. Her mother assures the girl is well fed, and getting the proper sleep at night but admits the girls tires easily when they go out on weekend hikes. Physical examination: BP: 90/60. HR 130/min the only remarkable findings are extremely pale skin and mucosae. Grade 3/6 systolic murmur. Lab tests report Hb: 4.2 g/dL, MCV 61.8 fL, serum iron &lt; 1.8 umol/L and ferritin of 2 ng/mL. Fecal occult blood is negative.</description>
+    <summary>A 15 yo girl with fatigue, pale skin, low hemoglobin and ferritin.</summary>
+    <diagnosis>Iron-Deficiency Anemia</diagnosis>
+  </topic>
+  <topic number="28" type="treatment">
+    <description>A previously healthy 8-year-old boy presents with a complaint of right lower extremity pain and fever. He reports limping for the past two days. The parents report no previous trauma, but do remember a tick bite during a summer visit to Maryland several months ago. They do not remember observing erythema migrans. On examination, the right knee is tender and swollen. Peripheral WBC count and SRP are slightly elevated.</description>
+    <summary>An 8-year-old boy presents with a swollen right knee, lower extremity pain and fever. The parents report no history of trauma. The parents noticed a tick bite several months earlier.</summary>
+    <diagnosis>Lyme arthritis</diagnosis>
+  </topic>
+  <topic number="29" type="treatment">
+    <description>A 4-year-old girl presents with persistent fever for the past week. The parents report a spike at 104°F. The parents brought the child to the emergency room when they noticed erythematous rash on the girl's trunk. Physical examination reveals strawberry red tongue, red and cracked lips, and swollen red hands. The whites of both eyes are red with no discharge.</description>
+    <summary>A 4-year-old girl with persistent high fever, skin rash, strawberry tongue, swollen red hands, and bilateral nonexudative conjunctivitis.</summary>
+    <diagnosis>Kawasaki disease</diagnosis>
+  </topic>
+  <topic number="30" type="treatment">
+    <description>A 47 year old male who fell on his outstretched left arm presents with pain and bruising on the inside and outside of the elbow, swelling, and inability to bend the arm. On the x-ray, the ulna has dislocated posteriorly from the trochlea of the humerus. The radius has dislocated from the capitulum of the humerus.</description>
+    <summary>A 47 year old male who fell on his outstretched left arm presents with pain, swelling, and inability to bend the arm. The x-ray, shows posterior elbow dislocation.</summary>
+    <diagnosis>elbow dislocation</diagnosis>
+  </topic>
+</topics>

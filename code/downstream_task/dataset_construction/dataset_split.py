@@ -7,24 +7,6 @@ from tqdm import tqdm
 # New notes might be directly added into train set.
 dev_PMIDs = set(json.load(open("../../../meta_data/dev_PMIDs.json", "r")))
 test_PMIDs = set(json.load(open("../../../meta_data/test_PMIDs.json", "r")))
-
-# Split PNR datastet
-PNR_dataset = json.load(open("../../../meta_data/patient_note_recognition.json", "r"))
-PNR_train = []
-PNR_dev = []
-PNR_test = []
-for instance in tqdm(PNR_dataset):
-    if instance['PMID'] in dev_PMIDs:
-        PNR_dev.append(instance)
-    elif instance['PMID'] in test_PMIDs:
-        PNR_test.append(instance)
-    else:
-        PNR_train.append(instance)
-
-json.dump(PNR_train, open("../../../datasets/task_1_patient_note_recognition/PNR_train.json", "w"), indent = 4)
-json.dump(PNR_dev, open("../../../datasets/task_1_patient_note_recognition/PNR_dev.json", "w"), indent = 4)
-json.dump(PNR_test, open("../../../datasets/task_1_patient_note_recognition/PNR_test.json", "w"), indent = 4)
-
 patients = json.load(open("../../../meta_data/PMC-Patients.json", "r"))
 
 # Get patient_uids in dataset split and split PMC-Patients
@@ -62,33 +44,33 @@ PPR_test = {}
 for patient_uid in tqdm(relevant_patient2patient.keys()):
     # Only train_patient_uids are used as documents.
     if patient_uid in train_patient_uids:
-        PPR_train[patient_uid] = [[], relevant_patient2patient[patient_uid][1]]
-        for rel_case in relevant_patient2patient[patient_uid][0]:
+        PPR_train[patient_uid] = []
+        for rel_case in relevant_patient2patient[patient_uid]:
             if rel_case in train_patient_uids:
-                PPR_train[patient_uid][0].append(rel_case)
+                PPR_train[patient_uid].append(rel_case)
         # Remove queries without relevant patients.
-        if len(PPR_train[patient_uid][0]) + len(PPR_train[patient_uid][1]) == 0:
+        if len(PPR_train[patient_uid]) == 0:
             del PPR_train[patient_uid]
-    # Both train_patient_uids and dev_patient_uids are used as documents.
+            
     if patient_uid in dev_patient_uids:
-        PPR_dev[patient_uid] = [[], relevant_patient2patient[patient_uid][1]]
-        for rel_case in relevant_patient2patient[patient_uid][0]:
-            if rel_case in dev_patient_uids or rel_case in train_patient_uids:
-                PPR_dev[patient_uid][0].append(rel_case)
-        if len(PPR_dev[patient_uid][0]) + len(PPR_dev[patient_uid][1]) == 0:
+        PPR_dev[patient_uid] = []
+        for rel_case in relevant_patient2patient[patient_uid]:
+            if rel_case in train_patient_uids:
+                PPR_dev[patient_uid].append(rel_case)
+        if len(PPR_dev[patient_uid]) == 0:
             del PPR_dev[patient_uid]
-    # Both train_patient_uids and test_patient_uids are used as documents.
+            
     if patient_uid in test_patient_uids:
-        PPR_test[patient_uid] = [[], relevant_patient2patient[patient_uid][1]]
-        for rel_case in relevant_patient2patient[patient_uid][0]:
-            if rel_case in test_patient_uids or rel_case in train_patient_uids:
-                PPR_test[patient_uid][0].append(rel_case)
-        if len(PPR_test[patient_uid][0]) + len(PPR_test[patient_uid][1]) == 0:
+        PPR_test[patient_uid] = []
+        for rel_case in relevant_patient2patient[patient_uid]:
+            if rel_case in train_patient_uids:
+                PPR_test[patient_uid].append(rel_case)
+        if len(PPR_test[patient_uid]) == 0:
             del PPR_test[patient_uid]
 
-json.dump(PPR_train, open("../../../datasets/task_3_patient2patient_retrieval/PPR_train.json", "w"), indent = 4)
-json.dump(PPR_dev, open("../../../datasets/task_3_patient2patient_retrieval/PPR_dev.json", "w"), indent = 4)
-json.dump(PPR_test, open("../../../datasets/task_3_patient2patient_retrieval/PPR_test.json", "w"), indent = 4)
+json.dump(PPR_train, open("../../../datasets/patient2patient_retrieval/PPR_train.json", "w"), indent = 4)
+json.dump(PPR_dev, open("../../../datasets/patient2patient_retrieval/PPR_dev.json", "w"), indent = 4)
+json.dump(PPR_test, open("../../../datasets/patient2patient_retrieval/PPR_test.json", "w"), indent = 4)
 
 # Split patient2article (PAR) dataset.
 relevant_patient2article = json.load(open("../../../meta_data/patient2article_relevance.json", "r"))

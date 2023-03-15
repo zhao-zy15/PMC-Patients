@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<topics>
+ <topic number="1" type="diagnosis">
+  <description>A 58-year-old African-American woman presents to the ER with episodic pressing/burning anterior chest pain that began two days earlier for the first time in her life. The pain started while she was walking, radiates to the back, and is accompanied by nausea, diaphoresis and mild dyspnea, but is not increased on inspiration. The latest episode of pain ended half an hour prior to her arrival. She is known to have hypertension and obesity. She denies smoking, diabetes, hypercholesterolemia, or a family history of heart disease. She currently takes no medications. Physical examination is normal. The EKG shows nonspecific changes.</description>
+  <summary>58-year-old woman with hypertension and obesity presents with exercise-related episodic chest pain radiating to the back.</summary>
+ </topic>
+ <topic number="2" type="diagnosis">
+  <description>An 8-year-old male presents in March to the ER with fever up to 39 C, dyspnea and cough for 2 days. He has just returned from a 5 day vacation in Colorado. Parents report that prior to the onset of fever and cough, he had loose stools. He denies upper respiratory tract symptoms. On examination he is in respiratory distress and has bronchial respiratory sounds on the left. A chest x-ray shows bilateral lung infiltrates.</description>
+  <summary>8-year-old boy with 2 days of loose stools, fever, and cough after returning from a trip to Colorado. Chest x-ray shows bilateral lung infiltrates.</summary>
+ </topic>
+ <topic number="3" type="diagnosis">
+  <description>A 58-year-old nonsmoker white female with mild exertional dyspnea and occasional cough is found to have a left lung mass on chest x-ray. She is otherwise asymptomatic. A neurologic examination is unremarkable, but a CT scan of the head shows a solitary mass in the right frontal lobe.</description>
+  <summary> 58-year-old female non-smoker with left lung mass on x-ray. Head CT shows a solitary right frontal lobe mass.</summary>
+ </topic>
+ <topic number="4" type="diagnosis">
+  <description>A 2-year-old boy is brought to the emergency department by his parents for 5 days of high fever and irritability. The physical exam reveals conjunctivitis, strawberry tongue, inflammation of the hands and feet, desquamation of the skin of the fingers and toes, and cervical lymphadenopathy with the smallest node at 1.5 cm. The abdominal exam demonstrates tenderness and enlarged liver. Laboratory tests report elevated alanine aminotransferase, white blood cell count of 17,580/mm, albumin 2.1 g/dL, C-reactive protein 4.5 mg, erythrocyte sedimentation rate 60 mm/h, mild normochromic, normocytic anemia, and leukocytes in urine of 20/mL with no bacteria identified. The echocardiogram shows moderate dilation of the coronary arteries with possible coronary artery aneurysm.</description>
+  <summary>2-year-old boy with fever and irritability for 5 days. Physical exam findings include conjunctivitis, strawberry tongue, and desquamation of the fingers and toes. Lab results include low albumin, elevated white blood cell count and C-reactive protein, and urine leukocytes. Echo shows moderate dilation of the coronary arteries.</summary>
+ </topic>
+ <topic number="5" type="diagnosis">
+  <description>A 56-year-old female on 20th day post-left mastectomy presents to the emergency department complaining of shortness of breath and malaise. The patient says that she has remained in bed for the last two weeks. The physical examination reveals tenderness on the left upper thoracic wall and right calf. The surgical incision shows no bleeding or signs of infection. Pulmonary auscultation is significant for bilateral decreased breath sounds, especially at the right base. Laboratory tests reveal an elevated D-dimer.</description>
+  <summary>56-year-old woman presents with shortness of breath 3 weeks after surgical mastectomy. Physical exam is significant for right calf tenderness and decreased breath sounds at the right base. Her D-dimer level is elevated.</summary>
+ </topic>
+ <topic number="6" type="diagnosis">
+  <description>64-year-old obese female with diagnosis of diabetes mellitus and persistently elevated HbA1c. She is reluctant to see a nutritionist and is not compliant with her diabetes medication or exercise. She complains of a painful skin lesion on the left lower leg. She has tried using topical lotions and creams but the lesion has increased in size and is now oozing.</description>
+  <summary>64-year-old woman with uncontrolled diabetes, now with an oozing, painful skin lesion on her left lower leg.</summary>
+ </topic>
+ <topic number="7" type="diagnosis">
+  <description>A 26-year-old obese woman with a history of bipolar disorder complains that her recent struggles with her weight and eating have caused her to feel depressed. She states that she has recently had difficulty sleeping and feels excessively anxious and agitated. She also states that she has had thoughts of suicide. She often finds herself fidgety and unable to sit still for extended periods of time. Her family tells her that she is increasingly irritable. Her current medications include lithium carbonate and zolpidem.</description>
+  <summary>26-year-old obese woman with bipolar disorder, on zolpidem and lithium, with recent difficulty sleeping, agitation, suicidal ideation, and irritability.</summary>
+ </topic>
+ <topic number="8" type="diagnosis">
+  <description>A 62-year-old man sees a neurologist for progressive memory loss and jerking movements of the lower extremities. Neurologic examination confirms severe cognitive deficits and memory dysfunction. An electroencephalogram shows generalized periodic sharp waves. Neuroimaging studies show moderately advanced cerebral atrophy. A cortical biopsy shows diffuse vacuolar changes of the gray matter with reactive astrocytosis but no inflammatory infiltration.</description>
+  <summary>62-year-old man with progressive memory loss and involuntary leg movements. Brain MRI reveals cortical atrophy, and cortical biopsy shows vacuolar gray matter changes with reactive astrocytosis.</summary>
+ </topic>
+ <topic number="9" type="diagnosis">
+  <description>A 43-year-old woman visits her dermatologist for lesions on her neck. On examination, multiple lesions are seen. Each lesion is small soft, and pedunculated. The largest lesion is about 4 mm in diameter. The color of different lesions varies from flesh colored to slightly hyperpigmented.</description>
+  <summary>43-year-old woman with soft, flesh-colored, pedunculated lesions on her neck.</summary>
+ </topic>
+ <topic number="10" type="diagnosis">
+  <description>A physician is called to see a 67-year-old woman who underwent cardiac catheterization via the right femoral artery earlier in the morning. She is now complaining of a cool right foot. Upon examination she has a pulsatile mass in her right groin with loss of distal pulses, and auscultation reveals a bruit over the point at which the right femoral artery was entered.</description>
+  <summary>67-year-old woman status post cardiac catheterization via right femoral artery, now with a cool, pulseless right foot and right femoral bruit.</summary>
+ </topic>
+ <topic number="11" type="test">
+  <description>A 40-year-old woman with no past medical history presents to the ER with excruciating pain in her right arm that had started 1 hour prior to her admission. She denies trauma. On examination she is pale and in moderate discomfort, as well as tachypneic and tachycardic. Her body temperature is normal and her blood pressure is 80/60. Her right arm has no discoloration or movement limitation.</description>
+  <summary>40-year-old woman with severe right arm pain and hypotension. She has no history of trauma and right arm exam reveals no significant findings.</summary>
+ </topic>
+ <topic number="12" type="test">
+  <description>A 25-year-old woman presents to the clinic complaining of prolonged fatigue. She denies difficulty sleeping and sleeps an average of 8 hours a night. She also notes hair loss, a change in her voice and weight gain during the previous 6 months. She complains of cold intolerance. On examination she has a prominent, soft, uniform anterior cervical mass at the midline.</description>
+  <summary>25-year-old woman with fatigue, hair loss, weight gain, and cold intolerance for 6 months.</summary>
+ </topic>
+ <topic number="13" type="test">
+  <description>A 30-year-old generally healthy woman presents with shortness of breath that had started 2 hours before admission. She has had no health problems in the past besides 2 natural abortions. She had given birth to a healthy child 3 weeks before. On examination, she is apprehensive, tachypneic and tachycardic, her blood pressure is 110/70 and her oxygen saturation 92%. Otherwise, physical examination is unremarkable. Her chest x-ray and CBC are normal.</description>
+  <summary>30-year-old woman who is 3 weeks post-partum, presents with shortness of breath, tachypnea, and hypoxia.</summary>
+ </topic>
+ <topic number="14" type="test">
+  <description>An 85-year-old man is brought to the ER because of gradual decrease in his level of consciousness. In the last 3 days he stopped walking and eating by himself. He has had no fever, cough, rash or diarrhea. His daughter recalls that he had been involved in a car accident 3 weeks prior to his admission and had a normal head CT at that time.</description>
+  <summary>85-year-old man who was in a car accident 3 weeks ago, now with 3 days of progressively decreasing level of consciousness and impaired ability to perform activities of daily living.</summary>
+ </topic>
+ <topic number="15" type="test">
+  <description>A 36-year-old woman presents to the emergency department with 12 weeks of amenorrhea, vaginal spotting that has increased since yesterday, lower abdominal tenderness, nausea and vomiting. The physical exam reveals overall tender abdomen, 18-week sized uterus, and cervical dilation of 2 cm. The complete blood count and biochemical profile are normal. Point of care pregnancy test with cut-off sensitivity of 25 mIU/ml Beta-HCG is negative. The ultrasound reports enlarged uterus (12 cm x 9 cm x 7 cms) with multiple cystic areas in the interior. The differential diagnosis includes vesicular mole vs fibroid degeneration.</description>
+  <summary>36-year-old woman with amenorrhea, abdominal tenderness, enlarged uterus, and cervical dilation. Urine pregnancy test is negative. Ultrasound reveals an enlarged uterus with multiple cystic areas, which could be consistent with vesicular mole and fibroid degeneration.</summary>
+ </topic>
+ <topic number="16" type="test">
+  <description>A 28-year-old female with neck and shoulder pain and left hand and arm paresthesias three weeks after returning from a trip to California where she attended a stray animal recovery campaign. Her physical exam was unremarkable except for slight tremors and almost imperceptible spasticity. She was prescribed NSAIDS and a topical muscle relaxant. She was brought in to the ER three days later with spastic arm movements, sweating, increasing agitation and anxiety, malaise, difficultly swallowing and marked hydrophobia, and was immediately hospitalized.</description>
+  <summary>28-year-old female with neck pain and left arm numbness 3 weeks after working with stray animals. Physical exam initially remarkable for slight left arm tremor and spasticity. Three days later she presented with significant arm spasticity, diaphoresis, agitation, difficulty swallowing, and hydrophobia.</summary>
+ </topic>
+ <topic number="17" type="test">
+  <description>A 48-year-old white male with history of common variable immunodeficiency (CVID) with acute abdominal pain, fever, dehydration, HR of 132 bpm, BP 80/40. The physical examination is remarkable for tenderness and positive Murphy sign. Abdominal ultrasound shows hepatomegaly and abundant free intraperitoneal fluid. Exploratory laparotomy reveals a ruptured liver abscess, which is then surgically drained. After surgery, the patient is taken to the ICU.</description>
+  <summary>48-year-old man with common variable immunodeficiency presents with abdominal pain and fever. Ultrasound reveals hepatomegaly and free intraperitoneal fluid. A ruptured liver abscess is found and drained during exploratory laparotomy.</summary>
+ </topic>
+ <topic number="18" type="test">
+  <description>A 6-month-old male infant has a urine output of less than 0.2 mL/kg/hr shortly after undergoing major surgery. On examination, he has generalized edema. His blood pressure is 115/80 mm Hg, his pulse is 141/min, and his respirations are 18/min. His blood urea nitrogen is 33 mg/dL, and his serum creatinine is 1.3 mg/dL. Initial urinalysis shows specific gravity of 1.017. Microscopic examination of the urine sample reveals 1 WBC per high-power field (HPF), 18 RBCs per HPF, and 5 granular casts per HPF. His fractional excretion of sodium is 3.3%.</description>
+  <summary>6-month-old male with decreased urine output and edema several hours after surgery. He is hypertensive and tachycardic, has a high BUN and creatinine, and urine microscopy reveals red blood cells and granular casts.</summary>
+ </topic>
+ <topic number="19" type="test">
+  <description>A 52-year-old African American man with a history of heavy smoking and drinking, describes progressive dysphagia that began several months ago. He first noticed difficulty swallowing meat. His trouble swallowing then progressed to include other solid foods, soft foods, and then liquids. He is able to locate the point where food is obstructed at the lower end of his sternum. He has lost a total of 25 pounds.</description>
+  <summary>52-year-old man with history of smoking and heavy drinking, now with progressive dysphagia and 25-pound weight loss.</summary>
+ </topic>
+ <topic number="20" type="test">
+  <description>A 32-year-old woman is admitted to the ER following a car accident. She has sustained multiple injuries including upper and lower extremity fractures. She is fully awake and alert, and she reports that she was not wearing a seat belt. Her blood pressure is 134/74 mm Hg, and her pulse is 87/min. Physical examination reveals a tender abdomen with guarding and rebound in all four quadrants. She has no bowel sounds.</description>
+  <summary>32-year-old unbelted driver status post car accident. Has multiple extremity fractures and severe abdominal pain with rebound and guarding.</summary>
+ </topic>
+ <topic number="21" type="treatment">
+  <description>A 21-year-old female is evaluated for progressive arthralgias and malaise. On examination she is found to have alopecia, a rash mainly distributed on the bridge of her nose and her cheeks, a delicate non-palpable purpura on her calves, and swelling and tenderness of her wrists and ankles. Her lab shows normocytic anemia, thrombocytopenia, a 4/4 positive ANA and anti-dsDNA. Her urine is positive for protein and RBC casts.</description>
+  <summary>21-year-old female with progressive arthralgias, fatigue, and butterfly-shaped facial rash. Labs are significant for positive ANA and anti-double-stranded DNA, as well as proteinuria and RBC casts.</summary>
+ </topic>
+ <topic number="22" type="treatment">
+  <description>A 15-year-old girl presents to the ER with abdominal pain. The pain appeared gradually and was periumbilical at first, localizing to the right lower quadrant over hours. She has had no appetite since yesterday but denies diarrhea. She has had no sexual partners and her menses are regular. On examination, she has localized rebound tenderness over the right lower quadrant. On an abdominal ultrasound, a markedly edematous appendix is seen.</description>
+  <summary>15-year-old girl with right lower quadrant abdominal pain, decreased appetite, and enlarged appendix on abdominal ultrasound.</summary>
+ </topic>
+ <topic number="23" type="treatment">
+  <description>A 63-year-old man presents with cough and shortness of breath. His past medical history is notable for heavy smoking, spinal stenosis, diabetes, hypothyroidism and mild psoriasis. He also has a family history of early onset dementia. His symptoms began about a week prior to his admission, with productive cough, purulent sputum and difficulty breathing, requiring him to use his home oxygen for the past 24 hours. He denies fever. On examination he is cyanotic, tachypneic, with a barrel shaped chest and diffuse rales over his lungs. A chest x-ray is notable for hyperinflation with no consolidation.</description>
+  <summary>63-year-old heavy smoker with productive cough, shortness of breath, tachypnea, and oxygen requirement. Chest x-ray shows hyperinflation with no consolidation.</summary>
+ </topic>
+ <topic number="24" type="treatment">
+  <description>A 33-year-old male athlete presented to the ER with acute abdominal pain. Family member says the patient fell off his bike a week earlier and suffered blunt trauma to the left hemi-abdomen, and he has had mild abdominal pain since that day. The patient's history is negative for smoking, drugs, and alcohol. BP: 60/30 mmHg, HR: 140/min. The patient is pale, the physical examination of the abdomen revealed muscle contraction and resistance. Emergency ultrasound and CT scan of the abdomen reveal extended intraperitoneal hemorrhage due to spleen rupture.</description>
+  <summary> 33-year-old male presents with severe abdominal pain one week after a bike accident in which he sustained abdominal trauma. He is hypotensive and tachycardic, and imaging reveals a ruptured spleen and intraperitoneal hemorrhage.</summary>
+ </topic>
+ <topic number="25" type="treatment">
+  <description>An 8-year-old boy fell from his bike striking his left temple on the pavement. There was no immediate loss of consciousness, and a brief examination at the scene noted his pupils were symmetrical, reactive to the light, and he was moving all four limbs. Half an hour after the fall the child became drowsy, pale, and vomited. He was transferred to the emergency department. Upon arrival the heart rate was 52/min, blood pressure of 155/98. The Glasgow Coma Scale (GCS) was 6/15, the pupils were asymmetrical and movement of the right upper and lower extremities was impaired. The neurosurgical team advised deferring the CT scan in favor of initiating immediate treatment.</description>
+  <summary>8-year-old boy with decreased level of consciousness 30 minutes after falling from his bike and hitting his head. He was not wearing a helmet. In the ER he was bradycardic and hypertensive, and the neurosurgeon strongly advised immediate treatment.</summary>
+ </topic>
+ <topic number="26" type="treatment">
+  <description>A group of 14 humanitarian service workers is preparing a trip to the Amazon Rainforest region in Brazil. All the members of the group have traveled on multiple occasions and have up-to-date vaccine certificates. Malaria Chemoprophylaxis is indicated but three of the women are in different stages of pregnancy.</description>
+  <summary>Group traveling to the Amazon rainforest, including 3 pregnant women. All members' immunizations are up-to-date but they require malaria prophylaxis.</summary>
+ </topic>
+ <topic number="27" type="treatment">
+  <description>A 21-year-old college student undergoes colonoscopy due to family history of multiple polyps in his older siblings. His brother underwent total proctocolectomy at age 22, and his sister underwent a total proctocolectomy at age 28, after both were found to have hundreds of colonic adenomas on colonoscopy. Both siblings are currently well without any findings of neoplasms. The patient undergoes sigmoidoscopy and is found to have dozens of small colonic polyps within rectosigmoid. Several of these are biopsied and are all benign adenomas.</description>
+  <summary>21-year-old male with dozens of small polyps found on colonoscopy. Family history significant for both older siblings having total colectomies after colonoscopy revealed hundreds of adenomas.</summary>
+ </topic>
+ <topic number="28" type="treatment">
+  <description>A 31-year-old woman is seen in clinic with amenorrhea. She had menarche at age 14 and has had normal periods since then. However, her last menstrual period was 7 months ago. She also complains of an occasional milky nipple discharge. She is currently taking no mediations and would like to become pregnant soon. Examination shows a whitish nipple discharge bilaterally, but the rest of the examination is normal. Urine human chorionic gonadotropin (hCG) is negative, thyroid stimulating hormone (TSH) is normal, but prolactin is elevated.</description>
+  <summary>31-year-old female with amenorrhea, milky nipple discharge, negative urine pregnancy test, and elevated prolactin level.</summary>
+ </topic>
+ <topic number="29" type="treatment">
+  <description>A 51-year-old woman is seen in clinic for advice on osteoporosis. She has a past medical history of significant hypertension and diet-controlled diabetes mellitus. She currently smokes 1 pack of cigarettes per day. She was documented by previous LH and FSH levels to be in menopause within the last year. She is concerned about breaking her hip as she gets older and is seeking advice on osteoporosis prevention.</description>
+  <summary>51-year-old smoker with hypertension and diabetes, in menopause, needs recommendations for preventing osteoporosis.</summary>
+ </topic>
+ <topic number="30" type="treatment">
+  <description>A 72-year-old man complains of increasing calf pain when walking uphill. The symptoms have gradually increased over the past 3 months. The patient had an uncomplicated myocardial infarction 2 years earlier and a transient ischemic attack 6 months ago. Over the past month, his blood pressure has worsened despite previous control with diltiazem, hydrochlorothiazide, and propranolol. His is currently taking isosorbide dinitrate, hydrochlorothiazide, and aspirin. On physical examination, his blood pressure is 151/91 mm Hg, and his pulse is 67/min. There is a right carotid bruit. His lower extremities are slightly cool to the touch and have diminished pulses at the dorsalis pedis.</description>
+  <summary>72-year-old man with calf pain while walking uphill. History of ischemic heart disease and worsening hypertension despite medication compliance. On physical exam he has a right carotid bruit and his lower extremities are cool, with diminished dorsalis pedis pulses.</summary>
+ </topic>
+</topics>

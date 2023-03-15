@@ -102,30 +102,29 @@ for patient in tqdm(patients):
     PMID = patient['PMID']
     patient_id = patient['patient_uid']
 
-    # Similarity 2 is given to other notes from the same article, if any.
-    sim2_patient_id = deepcopy(PMID2patients[PMID])
-    sim2_patient_id.remove(patient_id)
+    # First collect other notes from the same article, if any.
+    sim_patient_id = deepcopy(PMID2patients[PMID])
+    sim_patient_id.remove(patient_id)
     
-    # Similarity 1 is given to notes extracted from relevant articles.
-    sim1_patient_id = []
-    sim1_PMID = relevant_article_with_note[PMID]
-    for sim1 in sim1_PMID:
-        for sim1_patient in PMID2patients[sim1]:
-            sim1_patient_id.append(sim1_patient)
+    # Then collect notes extracted from relevant articles.
+    sim_PMID = relevant_article_with_note[PMID]
+    for sim in sim_PMID:
+        for sim_patient in PMID2patients[sim]:
+            sim_patient_id.append(sim_patient)
 
-    patient2patient_similarity[patient_id] = (sim1_patient_id, sim2_patient_id)
+    patient2patient_similarity[patient_id] = sim_patient_id
 
-"""
+
 # Check symmetry of similarity annotation.
 total = set()
 for patient in patient2patient_similarity:
-    for rel in patient2patient_similarity[patient][0]:
+    for rel in patient2patient_similarity[patient]:
         total.add((patient, rel))
 
 for x,y in total:
     if (y,x) not in total:
         import ipdb; ipdb.set_trace()
-"""
+
 
 json.dump(patient2patient_similarity, open("../../../meta_data/patient2patient_similarity.json", "w"), indent = 4)
 del patient2patient_similarity
