@@ -9,7 +9,7 @@ import numpy as np
 class PPR_BiEncoder_Dataset(Dataset):
     def __init__(self, data_dir, mode, tokenizer):
         self.tokenizer = tokenizer
-        self.max_length = tokenizer.model_max_length
+        self.max_length = 512
         file_name = "PPR_{}.json".format(mode)
         data = json.load(open(os.path.join(data_dir, file_name), "r"))
         self.instances = []

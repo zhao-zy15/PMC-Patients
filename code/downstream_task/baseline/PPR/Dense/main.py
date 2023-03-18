@@ -1,17 +1,20 @@
 import argparse
 import torch
 from torch import nn
+from torch.nn.parallel import DistributedDataParallel
 from dataloader import PPR_BiEncoder_Dataset, MyCollateFn
 from model import BiEncoder
 import numpy as np
 from tqdm import trange, tqdm
 from transformers import AutoTokenizer, AdamW, get_linear_schedule_with_warmup, get_cosine_schedule_with_warmup, get_constant_schedule_with_warmup
 from torch.utils.data import DataLoader
+from torch.utils.data.distributed import DistributedSampler
+from generate_embeddings import generate_embeddings, dense_retrieve
 import os
 import wandb
 
 
-def train(args, model, dataloader, dev_dataloader, test_dataloader):
+def train(args, model, dataloader, dev_dataloader):
     wandb.init(project="PPR_BiEncoder", entity="zhengyun", config = args, name = args.output_dir[7:])
     dev_loss = []
     best_loss = 1e6
@@ -77,15 +80,21 @@ def train(args, model, dataloader, dev_dataloader, test_dataloader):
                 model.zero_grad()
             
             if global_step % args.test_steps == 0:
-                acc, loss = test(args, model, dev_dataloader)
-                print("======Dev at step {}======".format(global_step))
-                print(acc)
-                print(loss)
-                wandb.log({"dev_loss": loss}, step = global_step)
-                wandb.log({"dev_acc": acc}, step = global_step)
-                if loss < best_loss:
-                    best_loss = loss
-                    torch.save(model, os.path.join(args.output_dir, 'best_model.pth'))
+                test_results = test(args, model, dev_dataloader)
+                torch.distributed.all_reduce(test_results)
+                loss = (test_results[2] / test_results[3]).item()
+                acc = (test_results[0] / test_results[1]).item()
+                if args.local_rank == 0:
+                    print("======Dev at step {}======".format(global_step))
+                    print(acc)
+                    print(loss)
+                    wandb.log({"dev_loss": loss}, step = global_step)
+                    wandb.log({"dev_acc": acc}, step = global_step)
+                    if loss < best_loss:
+                        best_loss = loss
+                        wandb.run.summary["best_dev_loss"] = best_loss
+                        torch.save(model.module.state_dict(), os.path.join(args.output_dir, 'best_model.pth'))
+
                 if len(dev_loss) > 2 and loss > dev_loss[-1] and dev_loss[-1] > dev_loss[-2]:
                     return
                 else:
@@ -128,7 +137,7 @@ def test(args, model, dataloader):
             steps += 1
 
     model.train()
-    return right / total, total_loss / steps
+    return torch.Tensor([right, total, total_loss, steps]).to(args.device)
 
 
 def run(args):
@@ -137,45 +146,85 @@ def run(args):
     np.random.seed(args.seed)  # numpy
     torch.backends.cudnn.deterministic = True  # cudnn
 
+    torch.distributed.init_process_group(backend = "nccl", init_method = 'env://')
+    local_rank = int(os.environ["LOCAL_RANK"])
+    torch.cuda.set_device(local_rank)
+    args.device = torch.device("cuda", local_rank)
+    args.local_rank = local_rank
+    print(local_rank, args.device)
+
     data_dir = "../../../../../datasets/patient2patient_retrieval"
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
     model = BiEncoder(args.model_name_or_path)
     model.to(args.device)
+    model = DistributedDataParallel(model, device_ids = [local_rank], output_device = local_rank)
     
     train_dataset = PPR_BiEncoder_Dataset(data_dir, "train", tokenizer)
-    train_dataloader = DataLoader(train_dataset, args.batch_size, shuffle = True, collate_fn = MyCollateFn)
+    sampler = DistributedSampler(train_dataset, shuffle =True)
+    train_dataloader = DataLoader(train_dataset, args.batch_size, collate_fn = MyCollateFn, sampler = sampler)
     dev_dataset = PPR_BiEncoder_Dataset(data_dir, "dev", tokenizer)
-    dev_dataloader = DataLoader(dev_dataset, args.batch_size, shuffle = True, collate_fn = MyCollateFn)
-    test_dataset = PPR_BiEncoder_Dataset(data_dir, "test", tokenizer)
-    test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle = True, collate_fn = MyCollateFn)
+    sampler = DistributedSampler(dev_dataset, shuffle =True)
+    dev_dataloader = DataLoader(dev_dataset, args.batch_size, collate_fn = MyCollateFn, sampler = sampler)
     
     if not os.path.exists(args.output_dir):
         os.mkdir(args.output_dir)
     if args.train:
         torch.save(args, os.path.join(args.output_dir, 'training_args.bin'))
-        train(args, model, train_dataloader, dev_dataloader, test_dataloader)
-        torch.save(model, os.path.join(args.output_dir, 'last_model.pth'))
-        tokenizer.save_pretrained(args.output_dir)
-        model = torch.load(os.path.join(args.output_dir, "best_model.pth"))
-        acc, loss = test(args, model, test_dataloader)
-        print("======Test======")
-        print(acc)
-        print(loss)
-    else:
-        checkpoint = os.path.join(args.output_dir, 'best_model.pth')
-        model = torch.load(checkpoint)
-        model.to(args.device)
-        test_dataset = PPR_BiEncoder_Dataset(data_dir, "test", tokenizer)
-        test_dataloader = DataLoader(test_dataset, args.batch_size, shuffle = False, collate_fn = MyCollateFn)
-        acc, loss = test(args, model, test_dataloader)
-        print("======Test======")
-        print(acc, loss)
+        train(args, model, train_dataloader, dev_dataloader)
+        if args.local_rank == 0:
+            torch.save(model.module.state_dict(), os.path.join(args.output_dir, 'last_model.pth'))
+            tokenizer.save_pretrained(args.output_dir)
 
+        del model
+        torch.cuda.empty_cache()
+        model = BiEncoder(args.model_name_or_path)
+        model.to(args.device)
+        model = DistributedDataParallel(model, device_ids = [local_rank], output_device = local_rank)
+        model.module.load_state_dict(torch.load(os.path.join(args.output_dir, "best_model.pth")))
+        test_results = test(args, model, dev_dataloader)
+        torch.distributed.all_reduce(test_results)
+        if args.local_rank == 0:
+            loss = (test_results[2] / test_results[3]).item()
+            acc = (test_results[0] / test_results[1]).item()
+            print("======Final_Dev======")
+            print(acc)
+            print(loss)
+            wandb.run.summary["final_dev_loss"] = loss
+            wandb.run.summary["final_dev_acc"] = acc
+
+            test_embeddings, test_patient_uids, train_embeddings, train_patient_uids = generate_embeddings(
+                tokenizer, model, train_dataset.patients, args.device, args.output_dir, train_dataset.max_length)
+            results = dense_retrieve(test_embeddings, test_patient_uids, train_embeddings, train_patient_uids)
+            print(results)
+            wandb.run.summary['MRR'] = results[0]
+            wandb.run.summary['P@5'] = results[1]
+            wandb.run.summary['R@1k'] = results[2]
+            wandb.run.summary['R@10k'] = results[3]
+
+    else:
+        model.module.load_state_dict(torch.load(os.path.join(args.output_dir, "best_model.pth")))
+        test_results = test(args, model, dev_dataloader)
+        torch.distributed.all_reduce(test_results)
+        if args.local_rank == 0:
+            loss = (test_results[2] / test_results[3]).item()
+            acc = (test_results[0] / test_results[1]).item()
+            print("======Final_Dev======")
+            print(acc)
+            print(loss)
+
+            torch.cuda.empty_cache()
+            test_embeddings, test_patient_uids, train_embeddings, train_patient_uids = generate_embeddings(
+                tokenizer, model, train_dataset.patients, args.device, args.output_dir, train_dataset.max_length)
+            results = dense_retrieve(test_embeddings, test_patient_uids, train_embeddings, train_patient_uids)
+            print(results)
+    
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--model_name_or_path",
-    default = "dmis-lab/biobert-v1.1",
+    default = "michiyasunaga/BioLinkBERT-base",
+    #michiyasunaga/BioLinkBERT-base
+    #microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext
     type = str,
     help = "Model name or path."
 )
@@ -187,7 +236,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--learning_rate",
-    default = 5e-5,
+    default = 2e-5,
     type = float,
     help = "Learning rate."
 )
@@ -217,13 +266,13 @@ parser.add_argument(
 )
 parser.add_argument(
     "--warmup_steps",
-    default = 5000,
+    default = 2000,
     type = int,
     help = "Warmup steps."
 )
 parser.add_argument(
     "--test_steps",
-    default = 20000,
+    default = 2000,
     type = int,
     help = "Number of steps for each test performing."
 )
@@ -236,7 +285,7 @@ parser.add_argument(
 parser.add_argument(
     "--schedule", 
     type=str, 
-    default="cosine",
+    default="linear",
     choices=["linear", "cosine", "constant"], 
     help="Schedule."
 )

@@ -20,6 +20,5 @@ for file_name in tqdm(os.listdir(data_dir)):
 
 print(es.count(index = 'pubmed_title_abstract'))
 print(len(PMIDs))
-json.dump(list(PMIDs), open("../../../../../datasets/patient2article_retrieval/PAR_PMIDs.json", "w"), indent = 4)
 
 #import ipdb; ipdb.set_trace()

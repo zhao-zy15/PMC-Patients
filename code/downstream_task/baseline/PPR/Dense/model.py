@@ -12,8 +12,8 @@ class BiEncoder(nn.Module):
         
         
     def forward(self, input_ids_1, attention_mask_1, token_type_ids_1, input_ids_2, attention_mask_2, token_type_ids_2):
-        q_vectors = self.encoder(input_ids_1, attention_mask_1, token_type_ids_1)[1]
-        ctx_vectors = self.encoder(input_ids_2, attention_mask_2, token_type_ids_2)[1]
+        q_vectors = self.encoder(input_ids = input_ids_1, attention_mask = attention_mask_1, token_type_ids = token_type_ids_1)[1]
+        ctx_vectors = self.encoder(input_ids = input_ids_2, attention_mask = attention_mask_2, token_type_ids = token_type_ids_2)[1]
         scores = torch.matmul(q_vectors, ctx_vectors.transpose(1, 0))
         return scores
 
