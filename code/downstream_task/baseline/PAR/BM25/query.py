@@ -27,7 +27,7 @@ class search_thread(Thread):
     def run(self):
         query_text = es.get(index = "patient_" + self.mode, id = self.patient_id)['_source']['patient']
         query = {"query": {"multi_match": {"query": query_text, "type": "cross_fields", "fields": ["title^3", "abstract"]}}}
-        results = es.search(body = query, index = "pubmed_title_abstract", size = 10000, _source = False)
+        results = es.search(body = query, index = "par_abstract", size = 10000, _source = False)
         
         result_ids_with_score = [(x['_id'], x['_score']) for x in results['hits']['hits']]
         
@@ -81,6 +81,5 @@ while not q.empty():
 print("=========Test=========")
 print(np.mean(RR), np.mean(p_1), np.mean(p_3), np.mean(p_5), np.mean(p_10), np.mean(recall_1k), np.mean(recall_10k))
 print(len(RR))
-json.dump(result_ids, open("../patient2article_retrieved_test.json", "w"), indent = 4)
-json.dump(result_ids_with_score, open("../patient2article_retrieved_test_with_score.json", "w"), indent = 4)
+json.dump(result_ids_with_score, open("../PAR_BM25_test.json", "w"), indent = 4)
 

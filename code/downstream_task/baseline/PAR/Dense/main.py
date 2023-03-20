@@ -222,7 +222,8 @@ def run(args):
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--model_name_or_path",
-    default = "michiyasunaga/BioLinkBERT-base",
+    #default = "michiyasunaga/BioLinkBERT-base",
+    default = "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
     type = str,
     help = "Model name or path."
 )

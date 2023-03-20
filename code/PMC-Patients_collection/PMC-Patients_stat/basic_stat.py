@@ -25,14 +25,6 @@ print("Patient count: ", len(patients))
 length = [len(x) for x in PMID2patient.values()]
 print("Avg patient per article: ", np.mean(length))
 
-patient_finding = json.load(open("../../../meta_data/patient_note_recognition.json", "r"))
-para_count = 0
-for patient in patient_finding:
-    for tag in patient['tags']:
-        if tag != 'O':
-            para_count += 1
-print("Avg para per patient: ", para_count / len(patients))
-
 length = [len(re.split(r'\.[ \n]', x['patient'])) for x in patients]
 print("Avg sent per patient: ", np.mean(length))
 
@@ -44,3 +36,4 @@ for patient in patients:
     length.append(len(list(filter(lambda x: len(x) > 0, text.split()))))
 
 print("Avg word per patient: ", np.mean(length))
+import ipdb; ipdb.set_trace()

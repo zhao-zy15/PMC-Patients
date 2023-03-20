@@ -8,7 +8,7 @@ from transformers import AutoTokenizer
 from model import BiEncoder
 import sys
 sys.path.append('..')
-from metrics import getRR, getPrecision, getRecall, getNDCG, getAP
+from utils import getRR, getPrecision, getRecall
 
 
 def generate_embeddings(tokenizer, model, patients, device, output_dir, model_max_length = 512, batch_size = 500):
@@ -64,7 +64,7 @@ def generate_embeddings(tokenizer, model, patients, device, output_dir, model_ma
 def dense_retrieve(queries, query_ids, documents, doc_ids, nlist = 1024, m = 24, nprobe = 100):
     dim = queries.shape[1]
 
-    k = 1000
+    k = 10000
     quantizer = faiss.IndexFlatIP(dim)
     # Actually for PPR, it is possible to perform exact search.
     index = faiss.IndexFlatIP(dim)
@@ -85,28 +85,23 @@ def dense_retrieve(queries, query_ids, documents, doc_ids, nlist = 1024, m = 24,
     results = index.search(queries, k)
     print("End search!")
 
-    RR, P, AP, NDCG, R = ([],[],[],[], [])
-    retrieved = {}
+    RR, p_5, recall_1k, recall_10k = ([],[],[],[])
     for i in range(results[1].shape[0]):
         golden_list = data[query_ids[i]]
         result_ids = [doc_ids[idx] for idx in results[1][i]]
-        result_scores = results[0][i]
-        P.append(getPrecision(golden_list, result_ids[:10]))
-        R.append(getRecall(golden_list, result_ids))
+        p_5.append(getPrecision(golden_list, result_ids[:5]))
+        recall_1k.append(getRecall(golden_list, result_ids[:1000]))
         RR.append(getRR(golden_list, result_ids))
-        AP.append(getAP(golden_list, result_ids[:10], result_scores[:10]))
-        NDCG.append(getNDCG(golden_list, result_ids[:10], result_scores[:10]))
-        retrieved[query_ids[i]] = [[result_ids[j], results[0][i][j]] for j in range(k)]
+        recall_10k.append(getRecall(golden_list, result_ids))
 
-    json.dump(retrieved, open("../PPR_Dense_test.json", "w"), indent = 4)
-    return np.mean(RR), np.mean(P), np.mean(AP), np.mean(NDCG), np.mean(R)
+    return np.mean(RR), np.mean(p_5), np.mean(recall_1k), np.mean(recall_10k)
+
 
 
 if __name__ == "__main__":
     model_name_or_path = "dmis-lab/biobert-v1.1"
-    output_dir = "output_linkbert"
-    '''
-    #args = torch.load("{}/training_args.bin".format(output_dir))
+    
+    #args = torch.load("output/training_args.bin")
     torch.distributed.init_process_group(backend = "nccl", init_method = 'env://')
     local_rank = int(os.environ["LOCAL_RANK"])
     torch.cuda.set_device(local_rank)
@@ -117,20 +112,20 @@ if __name__ == "__main__":
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
     model.to(device)
     model=torch.nn.parallel.DistributedDataParallel(model, device_ids = [local_rank], output_device = local_rank)
-    model.module.load_state_dict(torch.load("{}/best_model.pth".format(output_dir)))
+    model.module.load_state_dict(torch.load("output/best_model.pth"))
 
     patients = json.load(open("../../../../../meta_data/PMC-Patients.json", "r"))
     patients = {patient['patient_uid']: patient for patient in patients}
-    test_embeddings, test_patient_uids, train_embeddings, train_patient_uids = generate_embeddings(tokenizer, model, patients, device, output_dir)
+    test_embeddings, test_patient_uids, train_embeddings, train_patient_uids = generate_embeddings(tokenizer, model, patients, device, "./output")
 
-    np.save("{}/test_embeddings.npy".format(output_dir), test_embeddings)
-    np.save("{}}/train_embeddings.npy".format(output_dir), train_embeddings)
-    json.dump(test_patient_uids, open("{}/test_patient_uids.json".format(output_dir), "w"), indent = 4)
-    json.dump(train_patient_uids, open("{}/train_patient_uids.json".format(output_dir), "w"), indent = 4)
-    '''
-    test_embeddings = np.load("{}/test_embeddings.npy".format(output_dir))
-    train_embeddings = np.load("{}/train_embeddings.npy".format(output_dir))
-    test_patient_uids = json.load(open("{}/test_patient_uids.json".format(output_dir), "r"))
-    train_patient_uids = json.load(open("{}/train_patient_uids.json".format(output_dir), "r"))
+    np.save("output/test_embeddings.npy", test_embeddings)
+    np.save("output/train_embeddings.npy", train_embeddings)
+    json.dump(test_patient_uids, open("output/test_patient_uids.json", "w"), indent = 4)
+    json.dump(train_patient_uids, open("output/train_patient_uids.json", "w"), indent = 4)
+    
+    test_embeddings = np.load("output/test_embeddings.npy")
+    train_embeddings = np.load("output/train_embeddings.npy")
+    test_patient_uids = json.load(open("output/test_patient_uids.json", "r"))
+    train_patient_uids = json.load(open("output/train_patient_uids.json", "r"))
     results = dense_retrieve(test_embeddings, test_patient_uids, train_embeddings, train_patient_uids)
     print(results)

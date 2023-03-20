@@ -137,7 +137,6 @@ for file_name in tqdm(os.listdir(abstract_dir)):
     for PMID in temp.keys():
         PMIDs.add(PMID)
 print(len(PMIDs))
-json.dump(list(PMIDs), open("../../../datasets/patient2article_retrieval/PAR_PMIDs.json", "w"), indent = 4)
 
 # All cites or cited by are defined to be relevant articles. 
 # Note the article from which the patient note is extracted is included as well.
