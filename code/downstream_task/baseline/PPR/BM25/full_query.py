@@ -38,7 +38,7 @@ threads = []
 result_ids_with_score = {}
 corpus_path = "../../../../../datasets/patient2patient_retrieval/PPR_corpus.jsonl"
 query_path = "../../../../../datasets/test_queries.jsonl"
-qrels_path = "../../../../../datasets/patient2patient_retrieval/PPR_test_qrels.tsv"
+qrels_path = "../../../../../datasets/patient2article_retrieval/PAR_test_qrels.tsv"
 corpus, queries, qrels = GenericDataLoader(
     corpus_file=corpus_path, 
     query_file=query_path, 
@@ -56,10 +56,4 @@ while not q.empty():
     result = q.get()
     result_ids_with_score[result[0]] = result[1]
 
-print("=========Test=========")
-evaluation = EvaluateRetrieval()
-metrics = evaluation.evaluate(qrels, result_ids_with_score, [10, 1000])
-print(metrics)
-mrr = evaluation.evaluate_custom(qrels, result_ids_with_score, [len(corpus)], metric="mrr")
-print(mrr)
-json.dump(result_ids_with_score, open("../PPR_BM25_test.json", "w"), indent = 4)
+json.dump(result_ids_with_score, open("../PPR_BM25_test_full.json", "w"), indent = 4)

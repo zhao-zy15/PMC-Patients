@@ -2,20 +2,20 @@ import argparse
 import torch
 from torch import nn
 from torch.nn.parallel import DistributedDataParallel
-from dataloader import PPR_BiEncoder_Dataset, MyCollateFn
+from dataloader import PAR_BiEncoder_Dataset, MyCollateFn
 from model import BiEncoder
 import numpy as np
 from tqdm import trange, tqdm
 from transformers import AutoTokenizer, AdamW, get_linear_schedule_with_warmup, get_cosine_schedule_with_warmup, get_constant_schedule_with_warmup
 from torch.utils.data import DataLoader
 from torch.utils.data.distributed import DistributedSampler
-from generate_embeddings import generate_embeddings, dense_retrieve
+from generate_embeddings import generate_patient_embeddings, generate_article_embeddings, dense_retrieve
 import os
 import wandb
 
 
 def train(args, model, dataloader, dev_dataloader):
-    wandb.init(project="PPR_BiEncoder", entity="zhengyun", config = args, name = args.output_dir[7:])
+    wandb.init(project="PAR_BiEncoder", entity="zhengyun", config = args, name = args.output_dir[7:])
     dev_loss = []
     best_loss = 1e6
     
@@ -153,16 +153,16 @@ def run(args):
     args.local_rank = local_rank
     print(local_rank, args.device)
 
-    data_dir = "../../../../../datasets/patient2patient_retrieval"
+    data_dir = "../../../../../datasets/patient2article_retrieval"
     tokenizer = AutoTokenizer.from_pretrained(args.model_name_or_path)
     model = BiEncoder(args.model_name_or_path)
     model.to(args.device)
     model = DistributedDataParallel(model, device_ids = [local_rank], output_device = local_rank)
     
-    train_dataset = PPR_BiEncoder_Dataset(data_dir, "train", tokenizer)
+    train_dataset = PAR_BiEncoder_Dataset(data_dir, "train", tokenizer)
     sampler = DistributedSampler(train_dataset, shuffle =True)
     train_dataloader = DataLoader(train_dataset, args.batch_size, collate_fn = MyCollateFn, sampler = sampler)
-    dev_dataset = PPR_BiEncoder_Dataset(data_dir, "dev", tokenizer)
+    dev_dataset = PAR_BiEncoder_Dataset(data_dir, "dev", tokenizer)
     sampler = DistributedSampler(dev_dataset, shuffle =True)
     dev_dataloader = DataLoader(dev_dataset, args.batch_size, collate_fn = MyCollateFn, sampler = sampler)
     
@@ -192,38 +192,42 @@ def run(args):
             wandb.run.summary["final_dev_loss"] = loss
             wandb.run.summary["final_dev_acc"] = acc
 
-            test_embeddings, test_patient_uids, train_embeddings, train_patient_uids = generate_embeddings(
+            test_embeddings, test_patient_uids = generate_patient_embeddings(
                 tokenizer, model, train_dataset.patients, args.device, args.output_dir, train_dataset.max_length)
-            results = dense_retrieve(test_embeddings, test_patient_uids, train_embeddings, train_patient_uids)
+            article_embeddings, PMIDs = generate_article_embeddings(
+                tokenizer, model, train_dataset.corpus, args.device, args.output_dir, train_dataset.max_length)
+            results = dense_retrieve(test_embeddings, test_patient_uids, article_embeddings, PMIDs)
             print(results)
             wandb.run.summary['MRR'] = results[0]
-            wandb.run.summary['P@5'] = results[1]
-            wandb.run.summary['R@1k'] = results[2]
-            wandb.run.summary['R@10k'] = results[3]
+            wandb.run.summary['P@10'] = results[1]
+            wandb.run.summary['MAP@10'] = results[2]
+            wandb.run.summary['NDCG@10'] = results[3]
+            wandb.run.summary['R@1k'] = results[4]
 
     else:
         model.module.load_state_dict(torch.load(os.path.join(args.output_dir, "best_model.pth")))
-        test_results = test(args, model, dev_dataloader)
-        torch.distributed.all_reduce(test_results)
+        #test_results = test(args, model, dev_dataloader)
+        #torch.distributed.all_reduce(test_results)
         if args.local_rank == 0:
-            loss = (test_results[2] / test_results[3]).item()
-            acc = (test_results[0] / test_results[1]).item()
-            print("======Final_Dev======")
-            print(acc)
-            print(loss)
+            #loss = (test_results[2] / test_results[3]).item()
+            #acc = (test_results[0] / test_results[1]).item()
+            #print("======Final_Dev======")
+            #print(acc)
+            #print(loss)
 
             torch.cuda.empty_cache()
-            test_embeddings, test_patient_uids, train_embeddings, train_patient_uids = generate_embeddings(
+            test_embeddings, test_patient_uids = generate_patient_embeddings(
                 tokenizer, model, train_dataset.patients, args.device, args.output_dir, train_dataset.max_length)
-            results = dense_retrieve(test_embeddings, test_patient_uids, train_embeddings, train_patient_uids)
+            article_embeddings, PMIDs = generate_article_embeddings(
+                tokenizer, model, train_dataset.corpus, args.device, args.output_dir, train_dataset.max_length)
+            results = dense_retrieve(test_embeddings, test_patient_uids, article_embeddings, PMIDs)
             print(results)
     
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
     "--model_name_or_path",
-    #default = "michiyasunaga/BioLinkBERT-base",
-    default = "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext",
+    default = "michiyasunaga/BioLinkBERT-base",
     type = str,
     help = "Model name or path."
 )
@@ -235,7 +239,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--learning_rate",
-    default = 2e-5,
+    default = 5e-5,
     type = float,
     help = "Learning rate."
 )
@@ -253,7 +257,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "--total_steps",
-    default = 50000,
+    default = 200000,
     type = int,
     help = "Number of total steps for training."
 )
@@ -265,13 +269,13 @@ parser.add_argument(
 )
 parser.add_argument(
     "--warmup_steps",
-    default = 5000,
+    default = 10000,
     type = int,
     help = "Warmup steps."
 )
 parser.add_argument(
     "--test_steps",
-    default = 5000,
+    default = 10000,
     type = int,
     help = "Number of steps for each test performing."
 )

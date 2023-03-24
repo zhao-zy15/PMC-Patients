@@ -10,13 +10,10 @@ class PPR_BiEncoder_Dataset(Dataset):
     def __init__(self, data_dir, mode, tokenizer):
         self.tokenizer = tokenizer
         self.max_length = 512
-        file_name = "PPR_{}.json".format(mode)
-        data = json.load(open(os.path.join(data_dir, file_name), "r"))
-        self.instances = []
-        for query in data:
-            for sim in data[query]:
-                self.instances.append((query, sim))
-        patients = json.load(open(os.path.join(data_dir, "../../meta_data/PMC-Patients.json"), "r"))
+        file_name = "PPR_{}_qrels.tsv".format(mode)
+        with open(os.path.join(data_dir, file_name), 'r') as f:
+            self.instances = [(line.split('\t')[0], line.split('\t')[1]) for line in f.readlines()[1:]]
+        patients = json.load(open(os.path.join(data_dir, "../PMC-Patients.json"), "r"))
         self.patients = {patient['patient_uid']: patient for patient in patients}
 
 

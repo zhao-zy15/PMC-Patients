@@ -5,16 +5,22 @@ from tqdm import tqdm
 
 
 es = ES()
-es.indices.create(index = "par_abstract")
+if not es.indices.exists(index = "par_corpus"):
+    es.indices.create(index = "par_corpus")
 
-PAR_abstracts = json.load(open("../../../../../datasets/patient2article_retrieval/PAR_abstracts.json", "r"))
+corpus_path = "../../../../../datasets/patient2article_retrieval/PAR_corpus.jsonl"
+corpus = []
+with open(corpus_path, 'r') as f:
+    for line in f:
+        corpus.append(json.loads(line))
+
 body = []
-for PMID in tqdm(PAR_abstracts):
-    body.append({"index": {"_index": "par_abstract", "_id": PMID}})
-    body.append({"title": PAR_abstracts[PMID]['title'], "abstract": PAR_abstracts[PMID]['abstract']})
-    if len(body) >= 10000:
+for article in tqdm(corpus):
+    body.append({"index": {"_index": "par_corpus", "_id": article['_id']}})
+    body.append({"title": article['title'], "text": article['text']})
+    if len(body) >= 100000:
         es.bulk(body)
         body = []
 es.bulk(body)
 
-print(es.count(index = 'par_abstract'))
+print(es.count(index = 'par_corpus'))

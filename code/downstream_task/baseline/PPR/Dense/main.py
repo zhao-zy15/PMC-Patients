@@ -197,9 +197,10 @@ def run(args):
             results = dense_retrieve(test_embeddings, test_patient_uids, train_embeddings, train_patient_uids)
             print(results)
             wandb.run.summary['MRR'] = results[0]
-            wandb.run.summary['P@5'] = results[1]
-            wandb.run.summary['R@1k'] = results[2]
-            wandb.run.summary['R@10k'] = results[3]
+            wandb.run.summary['P@10'] = results[1]
+            wandb.run.summary['MAP@10'] = results[2]
+            wandb.run.summary['NDCG@10'] = results[3]
+            wandb.run.summary['R@1k'] = results[4]
 
     else:
         model.module.load_state_dict(torch.load(os.path.join(args.output_dir, "best_model.pth")))

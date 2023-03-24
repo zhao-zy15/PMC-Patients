@@ -137,6 +137,8 @@ dmypy.json
 # Data
 *.json
 *.npy
+*.jsonl
+*.tsv
 
 # figures
 *.pdf
@@ -153,3 +155,6 @@ PMC-w2v.bin
 
 # wandb log
 wandb/
+
+# for case study
+case_study/
