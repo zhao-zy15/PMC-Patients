@@ -145,7 +145,7 @@ def run_metrics(output_dir):
     test_embeddings = np.load("{}/test_embeddings.npy".format(output_dir))
     article_embeddings = np.load("{}/article_embeddings.npy".format(output_dir))
     test_patient_uids = json.load(open("{}/test_patient_uids.json".format(output_dir), "r"))
-    PMIDs = json.load(open("{}/PMIDs.json".format(output_dir), "r"))
+    PMIDs = json.load(open("{}/PAR_PMIDs.json".format(output_dir), "r"))
     results = dense_retrieve(test_embeddings, test_patient_uids, article_embeddings, PMIDs)
     print(results)
     return
