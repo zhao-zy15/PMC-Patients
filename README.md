@@ -9,7 +9,7 @@ For those who only wish to reproduce baseline models, only PubMed abstracts are 
 If you have already downloaded PMC OA and PubMed abstracts on your device, skip this step and change relative directory in later steps. Otherwise, download [PMC OA](https://ftp.ncbi.nlm.nih.gov/pub/pmc/oa_bulk/) and [PubMed](https://ftp.ncbi.nlm.nih.gov/pubmed/). Note that file `PMC-ids.csv` under [this directory](https://ftp.ncbi.nlm.nih.gov/pub/pmc/) is also required.
 
 ## Dataset
-PMC-Patients dataset can be downloaded via [this link](https://drive.google.com/file/d/1vFCLy_CF8fxPDZvDtHPR6Dl6x9l0TyvW/view?usp=sharing) without any data usage agreement. After downloading, please unzip it and put `datasets` and `meta_data` under this directory.
+PMC-Patients dataset can be downloaded via [this link](https://drive.google.com/file/d/1BnZT3MaOry-92Kj4pzC7u1bFYCpNn0ct/view?usp=sharing) without any data usage agreement. After downloading, please unzip it and put `datasets` and `meta_data` under this directory.
 
 For dataset details, see `README.md` in `datasets` and `meta_data` directory.
 
