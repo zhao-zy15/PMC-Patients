@@ -4,13 +4,13 @@ import numpy as np
 from beir.retrieval.evaluation import EvaluateRetrieval
 
 
-retrieved = json.load(open("../../PPR/PPR_Dense_test_full.json", "r"))
-#retrieved = json.load(open("../../PPR/PPR_BM25_test_full.json", "r"))
+#retrieved = json.load(open("../../PPR/PPR_Dense_test_full.json", "r"))
+retrieved = json.load(open("../../PPR/PPR_BM25_test_full.json", "r"))
 for query in retrieved:
     retrieved[query] = sorted(retrieved[query].items(), key = lambda x: x[1], reverse = True)
 
 train_data = {}
-with open("../../../../../datasets/patient2article_retrieval/PAR_train_qrels.tsv", "r") as f:
+with open("../../../../../datasets/PAR/qrels_train.tsv", "r") as f:
     lines = f.readlines()
 for line in lines[1:]:
     q, doc, _ = line.split('\t')
@@ -19,14 +19,14 @@ for line in lines[1:]:
     else:
         train_data[q] = [doc]
 qrels = {}
-with open("../../../../../datasets/patient2article_retrieval/PAR_test_qrels.tsv", "r") as f:
+with open("../../../../../datasets/PAR/qrels_test.tsv", "r") as f:
     lines = f.readlines()
 for line in lines[1:]:
-    q, doc, _ = line.split('\t')
+    q, doc, score = line.split('\t')
     if q in qrels:
-        qrels[q][doc] = 1
+        qrels[q][doc] = int(score)
     else:
-        qrels[q] = {doc: 1}
+        qrels[q] = {doc: int(score)}
 
 # k = 0, take until candidates > 1W.
 k = 0
@@ -66,4 +66,4 @@ for patient in tqdm(qrels):
 evaluation = EvaluateRetrieval()
 metrics = evaluation.evaluate(qrels, results, [10, 1000])
 mrr = evaluation.evaluate_custom(qrels, results, [10000], metric="mrr")
-print(mrr[f'MRR@{10000}'], metrics[3]['P@10'], metrics[1]["MAP@10"], metrics[0]['NDCG@10'], metrics[2]['Recall@1000'])
+print(mrr[f'MRR@{10000}'], metrics[3]['P@10'], metrics[0]['NDCG@10'], metrics[2]['Recall@1000'])

@@ -139,6 +139,7 @@ dmypy.json
 *.npy
 *.jsonl
 *.tsv
+*.txt
 
 # figures
 *.pdf
@@ -146,6 +147,8 @@ dmypy.json
 
 # output
 output*/
+contriever-msmarco/
+msmarco-bert-base-dot-v5/
 
 # datasets
 *.tar.gz

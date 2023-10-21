@@ -9,9 +9,9 @@ from model import BiEncoder
 from beir.retrieval.evaluation import EvaluateRetrieval
 
 
-def generate_embeddings(tokenizer, model, patients, device, output_dir = None, model_max_length = 512, batch_size = 500):
+def generate_embeddings(tokenizer, model, patients, device, output_dir = None, model_max_length = 512, batch_size = 128):
     train_patient_uids = json.load(open("../../../../../meta_data/train_patient_uids.json", "r"))
-    with open("../../../../../datasets/patient2patient_retrieval/PPR_test_qrels.tsv", "r") as f:
+    with open("../../../../../datasets/PPR/qrels_test.tsv", "r") as f:
         lines = f.readlines()
     test_set = set([line.split('\t')[0] for line in lines[1:]])
     test_patient_uids = []
@@ -104,14 +104,14 @@ def dense_retrieve(queries, query_ids, documents, doc_ids, nlist = 1024, m = 24,
     print(index.ntotal)  
 
     qrels = {}
-    with open("../../../../../datasets/patient2patient_retrieval/PPR_test_qrels.tsv", "r") as f:
+    with open("../../../../../datasets/PPR/qrels_test.tsv", "r") as f:
         lines = f.readlines()
     for line in lines[1:]:
-        q, doc, _ = line.split('\t')
+        q, doc, score = line.split('\t')
         if q in qrels:
-            qrels[q][doc] = 1
+            qrels[q][doc] = int(score)
         else:
-            qrels[q] = {doc: 1}
+            qrels[q] = {doc: int(score)}
 
     print("Begin search...")
     results = index.search(queries, k)
@@ -123,11 +123,11 @@ def dense_retrieve(queries, query_ids, documents, doc_ids, nlist = 1024, m = 24,
         result_scores = results[0][i]
         retrieved[query_ids[i]] = {result_ids[j]: float(result_scores[j]) for j in range(k)}
 
-    json.dump(retrieved, open("../PPR_Dense_test.json", "w"), indent = 4)
+    #json.dump(retrieved, open("../PPR_link_test.json", "w"), indent = 4)
     evaluation = EvaluateRetrieval()
     metrics = evaluation.evaluate(qrels, retrieved, [10, 1000])
     mrr = evaluation.evaluate_custom(qrels, retrieved, [index.ntotal], metric="mrr")
-    return mrr[f'MRR@{index.ntotal}'], metrics[3]['P@10'], metrics[1]["MAP@10"], metrics[0]['NDCG@10'], metrics[2]['Recall@1000']
+    return mrr[f'MRR@{index.ntotal}'], metrics[3]['P@10'], metrics[0]['NDCG@10'], metrics[2]['Recall@1000']
 
 
 def run_metrics(output_dir):
@@ -163,12 +163,13 @@ def run_unsupervised(model_name_or_path):
 if __name__ == "__main__":
     #model_name_or_path = "michiyasunaga/BioLinkBERT-base"
     #model_name_or_path = "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext"
-    model_name_or_path = "emilyalsentzer/Bio_ClinicalBERT"
+    #model_name_or_path = "emilyalsentzer/Bio_ClinicalBERT"
     #model_name_or_path = "allenai/specter"
+    model_name_or_path = "./contriever-msmarco"
 
-    output_dir = "output_linkbert"
+    output_dir = "output_specter"
 
-    #run_metrics(output_dir)
-    run_unsupervised(model_name_or_path)
+    run_metrics(output_dir)
+    #run_unsupervised(model_name_or_path)
 
     

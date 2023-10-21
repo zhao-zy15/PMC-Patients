@@ -10,7 +10,7 @@ from beir.retrieval.evaluation import EvaluateRetrieval
 
 
 def generate_patient_embeddings(tokenizer, model, patients, device, output_dir = None, model_max_length = 512, batch_size = 500):
-    with open("../../../../../datasets/patient2article_retrieval/PAR_test_qrels.tsv", "r") as f:
+    with open("../../../../../datasets/PAR/qrels_test.tsv", "r") as f:
         lines = f.readlines()
     test_set = set([line.split('\t')[0] for line in lines[1:]])
     test_patient_uids = []
@@ -115,14 +115,14 @@ def dense_retrieve(queries, query_ids, documents, doc_ids, nlist = 1024, m = 24,
     print(index.ntotal)  
 
     qrels = {}
-    with open("../../../../../datasets/patient2article_retrieval/PAR_test_qrels.tsv", "r") as f:
+    with open("../../../../../datasets/PAR/qrels_test.tsv", "r") as f:
         lines = f.readlines()
     for line in lines[1:]:
-        q, doc, _ = line.split('\t')
+        q, doc, score = line.split('\t')
         if q in qrels:
-            qrels[q][doc] = 1
+            qrels[q][doc] = int(score)
         else:
-            qrels[q] = {doc: 1}
+            qrels[q] = {doc: int(score)}
 
     print("Begin search...")
     results = index.search(queries, k)
@@ -138,7 +138,7 @@ def dense_retrieve(queries, query_ids, documents, doc_ids, nlist = 1024, m = 24,
     evaluation = EvaluateRetrieval()
     metrics = evaluation.evaluate(qrels, retrieved, [10, 1000])
     mrr = evaluation.evaluate_custom(qrels, retrieved, [index.ntotal], metric="mrr")
-    return mrr[f'MRR@{index.ntotal}'], metrics[3]['P@10'], metrics[1]["MAP@10"], metrics[0]['NDCG@10'], metrics[2]['Recall@1000']
+    return mrr[f'MRR@{index.ntotal}'], metrics[3]['P@10'], metrics[0]['NDCG@10'], metrics[2]['Recall@1000']
 
 
 def run_metrics(output_dir):
@@ -166,7 +166,7 @@ def run_unsupervised(model_name_or_path):
     patients = json.load(open("../../../../../datasets/PMC-Patients.json", "r"))
     patients = {patient['patient_uid']: patient for patient in patients}
     test_embeddings, test_patient_uids = generate_patient_embeddings(tokenizer, model, patients, device)
-    corpus_file = "../../../../../datasets/patient2article_retrieval/PAR_corpus.jsonl"
+    corpus_file = "../../../../../datasets/PAR/corpus.jsonl"
     corpus = []
     with open(corpus_file, "r") as f:
         for line in f:
@@ -181,8 +181,9 @@ def run_unsupervised(model_name_or_path):
 if __name__ == "__main__":
     #model_name_or_path = "michiyasunaga/BioLinkBERT-base"
     #model_name_or_path = "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext"
-    model_name_or_path = "emilyalsentzer/Bio_ClinicalBERT"
+    #model_name_or_path = "emilyalsentzer/Bio_ClinicalBERT"
     #model_name_or_path = "allenai/specter"
+    model_name_or_path = "../../PPR/Dense/contriever-msmarco"
 
     output_dir = "output_linkbert"
 

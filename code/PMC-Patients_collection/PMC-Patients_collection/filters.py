@@ -208,7 +208,7 @@ if __name__ == "__main__":
     no_demo_count = 0
     new_data = []
     patients = set()
-    
+    import ipdb; ipdb.set_trace()
     data = json.load(open("../../../meta_data/patient_note_candidates.json", "r"))
     for dat in tqdm(data):
         # Remove duplicates

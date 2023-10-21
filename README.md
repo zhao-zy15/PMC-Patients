@@ -1,7 +1,13 @@
 # PMC-Patients
-This repository contains PMC-Patients dataset (including patient notes, patient-patient similarity annotations, patient-article relevance annotations, and four downstream task datasets: patient note recognition PNR, patient-patient similarity PPS, patient-patient retrieval PPR, and patient-article retrieval PAR), codes for collection datasets and several baseline models.
+PMC-Patients is a first-of-its-kind dataset consisting of 167k patient summaries extracted from case reports in PubMed Central (PMC), 3.1M patient-article relevance and 293k patient-patient similarity annotations defined by PubMed citation graph.
+PMC-Patients can serve as a patient collection as well as a benchmark for Retrieval-based Clinical Decision Support (ReCDS) system.
+For details, please refer to [our paper](https://arxiv.org/pdf/2202.13876.pdf).
 
-[See our paper](https://arxiv.org/pdf/2202.13876.pdf).
+You are free to [download the dataset](https://drive.google.com/file/d/1BnZT3MaOry-92Kj4pzC7u1bFYCpNn0ct/view?usp=sharing) (including patient summaries and training/dev/test data for ReCDS benchmark) without any data usage agreement. 
+For dataset format details, see `README.md` in `datasets` and `meta_data` directory.
+
+we also provide a [learderboard]() for PMC-Patients ReCDS benchmark.
+
 
 ## PMC OA and PubMed Downloads
 For those who only wish to reproduce baseline models, only PubMed abstracts are required for PAR task.

@@ -10,7 +10,9 @@ with open(corpus_path, 'r') as f:
     for line in f:
         corpus.append(json.loads(line))
 
-es = ES()
+es = ES("https://localhost:9200", 
+        ca_certs = "/media/sdb/ZhengyunZhao/elasticsearch-8.6.1/config/certs/http_ca.crt",
+        basic_auth = ("elastic", "EfE+svVur=0x8np*dAnV"))
 if not es.indices.exists(index = "ppr_corpus"):
     es.indices.create(index = "ppr_corpus")
 train_body = []
@@ -19,9 +21,9 @@ for patient in tqdm(corpus):
     train_body.append({"text": patient['text']})
 
     if len(train_body) >= 10000:
-        es.bulk(train_body)
+        es.bulk(operations = train_body)
         train_body = []
-es.bulk(train_body)
+es.bulk(operations = train_body)
 
 print(es.count(index = 'ppr_corpus'))
 
