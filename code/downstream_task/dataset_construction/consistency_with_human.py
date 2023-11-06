@@ -7,7 +7,7 @@ fontManager.addfont("../../../../Gill_Sans_MT.ttf")
 plt.rcParams['font.sans-serif'] = ['Gill Sans MT']
 
 
-human = json.load(open("../../../datasets/patient2patient_retrieval/PPR_PAR_human_annotations.json", "r"))
+human = json.load(open("../../../meta_data/relation_human_annotations.json", "r"))
 label = json.load(open("../baseline/PPR/PPR_human_eval_top_10.json", "r"))
 
 scores = [[], []]
@@ -69,7 +69,7 @@ bar_width = 0.3
 colors = ["firebrick", "steelblue"]
 ax1.bar(np.array([0,1,2,3]) - bar_width / 2, y0_ppr, width = bar_width, color = colors[0], label = 'Dissimilar in PMC-P')
 ax1.bar(np.array([0,1,2,3]) + bar_width / 2, y1_ppr, width = bar_width, color = colors[1], label = 'Similar in PMC-P')
-ax1.set_xlabel('Human similarity score', fontsize=12)
+ax1.set_xlabel('(b) Human similarity score', fontsize=12)
 ax1.set_ylabel('Percent of pairs', fontsize=12)
 ax1.set_xticks([0,1,2,3])
 ax1.set_xticklabels(['0', '1', '2', '3'])
@@ -77,7 +77,7 @@ ax1.legend(loc = 'upper left')
 
 ax2.bar(np.array([0,1,2,3]) - bar_width / 2, y0_par, width = bar_width, color = colors[0], label = 'Irrelevant in PMC-P')
 ax2.bar(np.array([0,1,2,3]) + bar_width / 2, y1_par, width = bar_width, color = colors[1], label = 'Relevant in PMC-P')
-ax2.set_xlabel('Human relevance score', fontsize=12)
+ax2.set_xlabel('(a) Human relevance score', fontsize=12)
 ax2.set_ylabel('Percent of pairs', fontsize=12)
 ax2.set_xticks([0,1,2,3])
 ax2.set_xticklabels(['0', '1', '2', '3'])

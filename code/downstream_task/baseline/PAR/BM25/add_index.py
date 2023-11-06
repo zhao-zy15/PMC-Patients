@@ -10,6 +10,8 @@ es = ES("https://localhost:9200",
 
 if not es.indices.exists(index = "par_corpus"):
     es.indices.create(index = "par_corpus")
+else:
+    es.indices.delete(index = "par_corpus")
 
 corpus_path = "../../../../../datasets/PAR/corpus.jsonl"
 corpus = []

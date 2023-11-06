@@ -54,16 +54,21 @@ for patient in tqdm(patients):
 
 # Split patient2article (PAR) dataset.
 relevant_patient2article = json.load(open("../../../meta_data/patient2article_relevance.json", "r"))
+with open("../../../datasets/PAR/PMIDs.txt", "r") as f:
+    lines = f.readlines()
+PAR_corpus = set([line.strip() for line in lines])
+print(len(PAR_corpus))
+
 PAR_train = {}
 PAR_dev = {}
 PAR_test = {}
 for patient_uid in tqdm(relevant_patient2article.keys()):
     if patient_uid in train_patient_uids:
-        PAR_train[patient_uid] = {rel: 2 if rel in PMIDs else 1 for rel in relevant_patient2article[patient_uid]}
+        PAR_train[patient_uid] = {rel: 2 if rel in PMIDs else 1 for rel in relevant_patient2article[patient_uid] if rel in PAR_corpus}
     if patient_uid in dev_patient_uids:
-        PAR_dev[patient_uid] = {rel: 2 if rel in PMIDs else 1 for rel in relevant_patient2article[patient_uid]}
+        PAR_dev[patient_uid] = {rel: 2 if rel in PMIDs else 1 for rel in relevant_patient2article[patient_uid] if rel in PAR_corpus}
     if patient_uid in test_patient_uids:
-        PAR_test[patient_uid] = {rel: 2 if rel in PMIDs else 1 for rel in relevant_patient2article[patient_uid]}
+        PAR_test[patient_uid] = {rel: 2 if rel in PMIDs else 1 for rel in relevant_patient2article[patient_uid] if rel in PAR_corpus}
 
 for dataset_type, dataset in [("train", PAR_train), ("dev", PAR_dev), ("test", PAR_test)]:
     with open(f"../../../datasets/PAR/qrels_{dataset_type}.tsv", "w") as f:

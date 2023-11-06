@@ -23,6 +23,7 @@ with open("../../../../../datasets/PAR/qrels_test.tsv", "r") as f:
     lines = f.readlines()
 for line in lines[1:]:
     q, doc, score = line.split('\t')
+    score = "1"
     if q in qrels:
         qrels[q][doc] = int(score)
     else:

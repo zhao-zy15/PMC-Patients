@@ -14,7 +14,7 @@ corpus, queries, qrels = GenericDataLoader(
     qrels_file=qrels_path).load_custom()
 
 
-model = DRES(models.SentenceBERT("./contriever-msmarco"), batch_size=128)
+model = DRES(models.SentenceBERT("./bge-base-en-v1.5"), batch_size=128)
 retriever = EvaluateRetrieval(model, score_function="dot")
 results = retriever.retrieve(corpus, queries)
 metrics = retriever.evaluate(qrels, results, [10, 1000])

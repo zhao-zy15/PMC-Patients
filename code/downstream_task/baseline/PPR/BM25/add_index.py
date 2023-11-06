@@ -4,15 +4,15 @@ import os
 from tqdm import tqdm
 
 
-corpus_path = "../../../../../datasets/patient2patient_retrieval/PPR_corpus.jsonl"
+corpus_path = "../../../../../datasets/PPR/corpus.jsonl"
 corpus = []
 with open(corpus_path, 'r') as f:
     for line in f:
         corpus.append(json.loads(line))
 
 es = ES("https://localhost:9200", 
-        ca_certs = "/media/sdb/ZhengyunZhao/elasticsearch-8.6.1/config/certs/http_ca.crt",
-        basic_auth = ("elastic", "EfE+svVur=0x8np*dAnV"))
+        ca_certs = "/media/sdb/ZhengyunZhao/elasticsearch-8.8.2/config/certs/http_ca.crt",
+        basic_auth = ("elastic", "Opi-UQJDyfSXjDSTmHnB"))
 if not es.indices.exists(index = "ppr_corpus"):
     es.indices.create(index = "ppr_corpus")
 train_body = []

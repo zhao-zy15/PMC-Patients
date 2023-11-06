@@ -7,7 +7,7 @@ BM25 = json.load(open("../PAR_BM25_test.json", "r"))
 BM25 = {query: {k: i+1 for i, (k,v) in enumerate(sorted(BM25[query].items(), key=lambda x: x[1], reverse=True))} for query in BM25}
 dense = json.load(open("../PAR_pubmed_test.json", "r"))
 dense = {query: {k: i+1 for i, (k,v) in enumerate(sorted(dense[query].items(), key=lambda x: x[1], reverse=True))} for query in dense}
-dense2 = json.load(open("../PAR_specter_test.json", "r"))
+dense2 = json.load(open("../PAR_link_test.json", "r"))
 dense2 = {query: {k: i+1 for i, (k,v) in enumerate(sorted(dense2[query].items(), key=lambda x: x[1], reverse=True))} for query in dense2}
 
 for rrf_k in [0, 2, 5, 10, 20, 50, 60, 80, 100, 200, 500]:

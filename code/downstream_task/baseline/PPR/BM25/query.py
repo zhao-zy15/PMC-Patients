@@ -11,9 +11,11 @@ from beir.retrieval.evaluation import EvaluateRetrieval
 from beir.datasets.data_loader import GenericDataLoader
 
 
-data_dir = "../../../../../datasets/patient2patient_retrieval"
+data_dir = "../../../../../datasets/PPR"
 
-es = ES(timeout = 1000)
+es = ES("https://localhost:9200", 
+        ca_certs = "/media/sdb/ZhengyunZhao/elasticsearch-8.8.2/config/certs/http_ca.crt",
+        basic_auth = ("elastic", "Opi-UQJDyfSXjDSTmHnB"))
 
 class search_thread(Thread):
     def __init__(self, patient_id, patient):
@@ -36,9 +38,9 @@ thread_max = BoundedSemaphore(40)
 q = Queue()
 threads = []
 result_ids_with_score = {}
-corpus_path = "../../../../../datasets/patient2patient_retrieval/PPR_corpus.jsonl"
-query_path = "../../../../../datasets/test_queries.jsonl"
-qrels_path = "../../../../../datasets/patient2patient_retrieval/PPR_test_qrels.tsv"
+corpus_path = "../../../../../datasets/PPR/corpus.jsonl"
+query_path = "../../../../../datasets/queries/dev_queries.jsonl"
+qrels_path = "../../../../../datasets/PPR/qrels_dev.tsv"
 corpus, queries, qrels = GenericDataLoader(
     corpus_file=corpus_path, 
     query_file=query_path, 
@@ -62,4 +64,4 @@ metrics = evaluation.evaluate(qrels, result_ids_with_score, [10, 1000])
 print(metrics)
 mrr = evaluation.evaluate_custom(qrels, result_ids_with_score, [len(corpus)], metric="mrr")
 print(mrr)
-json.dump(result_ids_with_score, open("../PPR_BM25_test.json", "w"), indent = 4)
+json.dump(result_ids_with_score, open("../PPR_BM25_dev.json", "w"), indent = 4)

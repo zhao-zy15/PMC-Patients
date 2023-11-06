@@ -24,7 +24,7 @@ def generate_embeddings(tokenizer, model, patients, device, output_dir = None, m
     model.eval()
     with torch.no_grad():
         tokenized = tokenizer(test_patients, max_length = model_max_length, padding = "max_length", truncation = True, return_tensors = 'pt')
-        test_embeddings = model.module.encoder(input_ids = tokenized['input_ids'][:batch_size].to(device), \
+        test_embeddings = model.encoder(input_ids = tokenized['input_ids'][:batch_size].to(device), \
             attention_mask = tokenized["attention_mask"][:batch_size].to(device), \
             token_type_ids = tokenized["token_type_ids"][:batch_size].to(device))
         if output_dir:    
@@ -32,7 +32,7 @@ def generate_embeddings(tokenizer, model, patients, device, output_dir = None, m
         else:
             test_embeddings = test_embeddings.last_hidden_state[:, 0, :].detach().cpu().numpy()
         for i in trange(1, (len(test_patients) // batch_size)):
-            temp = model.module.encoder(input_ids = tokenized['input_ids'][(i * batch_size) : ((i+1) * batch_size)].to(device), \
+            temp = model.encoder(input_ids = tokenized['input_ids'][(i * batch_size) : ((i+1) * batch_size)].to(device), \
                 attention_mask = tokenized["attention_mask"][(i * batch_size) : ((i+1) * batch_size)].to(device), \
                 token_type_ids = tokenized["token_type_ids"][(i * batch_size) : ((i+1) * batch_size)].to(device))
             if output_dir:    
@@ -40,7 +40,7 @@ def generate_embeddings(tokenizer, model, patients, device, output_dir = None, m
             else:
                 temp = temp.last_hidden_state[:, 0, :].detach().cpu().numpy()
             test_embeddings = np.concatenate((test_embeddings, temp), axis = 0)
-        temp = model.module.encoder(input_ids = tokenized['input_ids'][((i+1) * batch_size):].to(device), \
+        temp = model.encoder(input_ids = tokenized['input_ids'][((i+1) * batch_size):].to(device), \
             attention_mask = tokenized["attention_mask"][((i+1) * batch_size):].to(device), \
             token_type_ids = tokenized["token_type_ids"][((i+1) * batch_size):].to(device))
         if output_dir:    
@@ -51,7 +51,7 @@ def generate_embeddings(tokenizer, model, patients, device, output_dir = None, m
         print(test_embeddings.shape)
 
         tokenized = tokenizer(train_patients, max_length = model_max_length, padding = "max_length", truncation = True, return_tensors = 'pt')
-        train_embeddings = model.module.encoder(input_ids = tokenized['input_ids'][:batch_size].to(device), \
+        train_embeddings = model.encoder(input_ids = tokenized['input_ids'][:batch_size].to(device), \
             attention_mask = tokenized["attention_mask"][:batch_size].to(device), \
             token_type_ids = tokenized["token_type_ids"][:batch_size].to(device))
         if output_dir:    
@@ -59,7 +59,7 @@ def generate_embeddings(tokenizer, model, patients, device, output_dir = None, m
         else:
             train_embeddings = train_embeddings.last_hidden_state[:, 0, :].detach().cpu().numpy()
         for i in trange(1, (len(train_patients) // batch_size)):
-            temp = model.module.encoder(input_ids = tokenized['input_ids'][(i * batch_size) : ((i+1) * batch_size)].to(device), \
+            temp = model.encoder(input_ids = tokenized['input_ids'][(i * batch_size) : ((i+1) * batch_size)].to(device), \
                 attention_mask = tokenized["attention_mask"][(i * batch_size) : ((i+1) * batch_size)].to(device), \
                 token_type_ids = tokenized["token_type_ids"][(i * batch_size) : ((i+1) * batch_size)].to(device))
             if output_dir:    
@@ -67,7 +67,7 @@ def generate_embeddings(tokenizer, model, patients, device, output_dir = None, m
             else:
                 temp = temp.last_hidden_state[:, 0, :].detach().cpu().numpy()
             train_embeddings = np.concatenate((train_embeddings, temp), axis = 0)
-        temp = model.module.encoder(input_ids = tokenized['input_ids'][((i+1) * batch_size):].to(device), \
+        temp = model.encoder(input_ids = tokenized['input_ids'][((i+1) * batch_size):].to(device), \
             attention_mask = tokenized["attention_mask"][((i+1) * batch_size):].to(device), \
             token_type_ids = tokenized["token_type_ids"][((i+1) * batch_size):].to(device))
         if output_dir:    
@@ -140,21 +140,23 @@ def run_metrics(output_dir):
     return
 
 
-def run_unsupervised(model_name_or_path):    
-    torch.distributed.init_process_group(backend = "nccl", init_method = 'env://')
-    local_rank = int(os.environ["LOCAL_RANK"])
-    torch.cuda.set_device(local_rank)
-    device = torch.device("cuda", local_rank)
-    print(local_rank, device)
+def run_unsupervised(model_name_or_path, output_dir = None):    
+    # torch.distributed.init_process_group(backend = "nccl", init_method = 'env://')
+    # local_rank = int(os.environ["LOCAL_RANK"])
+    # torch.cuda.set_device(local_rank)
+    # device = torch.device("cuda", local_rank)
+    # print(local_rank, device)
+    device = "cuda"
 
     model = BiEncoder(model_name_or_path)
     tokenizer = AutoTokenizer.from_pretrained(model_name_or_path)
     model.to(device)
-    model=torch.nn.parallel.DistributedDataParallel(model, device_ids = [local_rank], output_device = local_rank)
+    # model=torch.nn.parallel.DistributedDataParallel(model, device_ids = [local_rank], output_device = local_rank)
+    # model.module.load_state_dict(torch.load("{}/best_model.pth".format(output_dir)))
 
     patients = json.load(open("../../../../../datasets/PMC-Patients.json", "r"))
     patients = {patient['patient_uid']: patient for patient in patients}
-    test_embeddings, test_patient_uids, train_embeddings, train_patient_uids = generate_embeddings(tokenizer, model, patients, device)
+    test_embeddings, test_patient_uids, train_embeddings, train_patient_uids = generate_embeddings(tokenizer, model, patients, device, output_dir)
     results = dense_retrieve(test_embeddings, test_patient_uids, train_embeddings, train_patient_uids)
     print(results)
     return
@@ -165,11 +167,11 @@ if __name__ == "__main__":
     #model_name_or_path = "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext"
     #model_name_or_path = "emilyalsentzer/Bio_ClinicalBERT"
     #model_name_or_path = "allenai/specter"
-    model_name_or_path = "./contriever-msmarco"
+    model_name_or_path = "./MedCPT-d"
 
-    output_dir = "output_specter"
-
-    run_metrics(output_dir)
-    #run_unsupervised(model_name_or_path)
+    #output_dir = "output_linkbert"
+    output_dir = None
+    #run_metrics(output_dir)
+    run_unsupervised(model_name_or_path, output_dir)
 
     

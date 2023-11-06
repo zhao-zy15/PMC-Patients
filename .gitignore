@@ -149,6 +149,8 @@ dmypy.json
 output*/
 contriever-msmarco/
 msmarco-bert-base-dot-v5/
+MedCPT*/
+bge*/
 
 # datasets
 *.tar.gz

@@ -14,10 +14,11 @@ corpus, queries, qrels = GenericDataLoader(
     qrels_file=qrels_path).load_custom()
 
 
-model = DRES(models.SentenceBERT("../../PPR/Dense/msmarco-bert-base-dot-v5"), batch_size=128)
+model = DRES(models.SentenceBERT("../../PPR/Dense/MedCPT-d"), batch_size=128)
 retriever = EvaluateRetrieval(model, score_function="dot")
 results = retriever.retrieve(corpus, queries)
 metrics = retriever.evaluate(qrels, results, [10, 1000])
+import ipdb; ipdb.set_trace()
 mrr = retriever.evaluate_custom(qrels, results, [len(corpus)], metric="mrr")
 print(metrics)
 print(mrr)

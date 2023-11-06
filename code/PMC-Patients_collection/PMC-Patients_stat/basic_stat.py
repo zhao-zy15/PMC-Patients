@@ -8,7 +8,7 @@ fontManager.addfont("../../../../Gill_Sans_MT.ttf")
 plt.rcParams['font.sans-serif'] = ['Gill Sans MT']
 
 
-patients = json.load(open("../../../meta_data/PMC-Patients.json", "r"))
+patients = json.load(open("../../../datasets/PMC-Patients.json", "r"))
 # PMID2patient_uid dict
 PMID2patient = {}
 for patient in patients:

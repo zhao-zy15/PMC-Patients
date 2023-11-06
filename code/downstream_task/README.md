@@ -20,48 +20,34 @@ To simply reproduce baselines, download our dataset and unzip it to directory `d
 Elasticsearch and the python package Elasticsearch is required.
 Add index.
 ```
-python baseline/task_3/ES/add_index.py
+python baseline/PAR/BM25/add_index.py
 ```
 Query with multithreads.
 ```
-python baseline/task_3/ES/query.py
+python baseline/PAR/BM25/query.py
 ```
 
-**EBR**
+**Dense Retrieval**
 
-First generate embeddings for each query and document.
+For zero-shot retrieval,
 ```
-python baseline/task_3/EBR/embedding.py
+python baseline/PPR/Dense/sbert.py
 ```
-Then perform embedding based retrieval.
+For fine-tuning models,
 ```
-python baseline/task_3/EBR/EBR.py
+python baseline/PPR/Dense/main.py
 ```
-
-**DSC**
+For evaluating fine-tuned models,
 ```
-python baseline/task_3/Dice/dice.py
-```
-
-
-### PAR
-Note that to run baseline models for PAR, you have to download PubMed and extract titles and abstracts (run `code/PMC-Patients_collection/pubmed_extractors/extract_title_abstract.py`).
-
-**BM25**
-
-Elasticsearch and the python package Elasticsearch is required.
-Add index.
-```
-python baseline/task_4/ES/add_index.py
-```
-Query with multithreads.
-```
-python baseline/task_4/ES/query.py
+python baseline/PPR/Dense/generate_embeddings.py
 ```
 
-**KNN**
-
+**Nearest Neighbor (NN)**
 ```
-python baseline/task_4/KNN/KNN.py
+python baseline/PPR/NN/NN.py
 ```
 
+**RRF**
+```
+python baseline/PPR/RRF/RRF.py
+```

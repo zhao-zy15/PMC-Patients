@@ -135,6 +135,7 @@ def dense_retrieve(queries, query_ids, documents, doc_ids, nlist = 1024, m = 24,
         retrieved[query_ids[i]] = {result_ids[j]: float(result_scores[j]) for j in range(k)}
 
     #json.dump(retrieved, open("../PAR_Dense_test.json", "w"), indent = 4)
+
     evaluation = EvaluateRetrieval()
     metrics = evaluation.evaluate(qrels, retrieved, [10, 1000])
     mrr = evaluation.evaluate_custom(qrels, retrieved, [index.ntotal], metric="mrr")
@@ -183,11 +184,12 @@ if __name__ == "__main__":
     #model_name_or_path = "microsoft/BiomedNLP-PubMedBERT-base-uncased-abstract-fulltext"
     #model_name_or_path = "emilyalsentzer/Bio_ClinicalBERT"
     #model_name_or_path = "allenai/specter"
-    model_name_or_path = "../../PPR/Dense/contriever-msmarco"
+    #model_name_or_path = "../../PPR/Dense/contriever-msmarco"
 
+    #output_dir = "output_clinical"
     output_dir = "output_linkbert"
 
-    #run_metrics(output_dir)
-    run_unsupervised(model_name_or_path)
+    run_metrics(output_dir)
+    #run_unsupervised(model_name_or_path)
 
     
