@@ -4,9 +4,7 @@ import os
 from tqdm import tqdm
 
 
-es = ES("https://localhost:9200", 
-        ca_certs = "/media/sdb/ZhengyunZhao/elasticsearch-8.8.2/config/certs/http_ca.crt",
-        basic_auth = ("elastic", "Opi-UQJDyfSXjDSTmHnB"))
+es = ES()
 
 if not es.indices.exists(index = "par_corpus"):
     es.indices.create(index = "par_corpus")
