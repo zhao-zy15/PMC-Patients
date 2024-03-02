@@ -13,10 +13,7 @@ from beir.datasets.data_loader import GenericDataLoader
 
 data_dir = "../../../../../datasets/PAR"
 
-es = ES("https://localhost:9200", 
-        ca_certs = "/media/sdb/ZhengyunZhao/elasticsearch-8.8.2/config/certs/http_ca.crt",
-        basic_auth = ("elastic", "Opi-UQJDyfSXjDSTmHnB"),
-        timeout = 1000)
+es = ES(timeout = 1000)
 
 
 class search_thread(Thread):
