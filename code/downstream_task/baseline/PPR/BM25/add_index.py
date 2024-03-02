@@ -10,9 +10,7 @@ with open(corpus_path, 'r') as f:
     for line in f:
         corpus.append(json.loads(line))
 
-es = ES("https://localhost:9200", 
-        ca_certs = "/media/sdb/ZhengyunZhao/elasticsearch-8.8.2/config/certs/http_ca.crt",
-        basic_auth = ("elastic", "Opi-UQJDyfSXjDSTmHnB"))
+es = ES()
 if not es.indices.exists(index = "ppr_corpus"):
     es.indices.create(index = "ppr_corpus")
 train_body = []
