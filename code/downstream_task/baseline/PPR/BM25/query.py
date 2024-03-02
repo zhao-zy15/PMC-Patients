@@ -13,9 +13,7 @@ from beir.datasets.data_loader import GenericDataLoader
 
 data_dir = "../../../../../datasets/PPR"
 
-es = ES("https://localhost:9200", 
-        ca_certs = "/media/sdb/ZhengyunZhao/elasticsearch-8.8.2/config/certs/http_ca.crt",
-        basic_auth = ("elastic", "Opi-UQJDyfSXjDSTmHnB"))
+es = ES()
 
 class search_thread(Thread):
     def __init__(self, patient_id, patient):
